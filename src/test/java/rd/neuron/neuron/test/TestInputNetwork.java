@@ -8,8 +8,8 @@ package rd.neuron.neuron.test;
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.neuron.neuron.DataStreamer;
 import rd.neuron.neuron.Layer.Function;
+import rd.data.DataStreamer;
 import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
 import rd.neuron.neuron.UnitLayerBuilder;

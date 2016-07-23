@@ -10,6 +10,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<nd4j.version>0.4-rc3.8</nd4j.version>
+		<dl4j.version>0.4.0</dl4j.version>
+		<canova.version>0.0.0.17</canova.version>
 	</properties>
 
 	<dependencies>
@@ -63,6 +66,23 @@
 			<groupId>org.apache.opennlp</groupId>
 			<artifactId>opennlp-tools</artifactId>
 			<version>1.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.deeplearning4j</groupId>
+			<artifactId>deeplearning4j-core</artifactId>
+			<version>${dl4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.nd4j</groupId>
+			<artifactId>nd4j-x86</artifactId>
+			<version>${nd4j.version}</version>
+		</dependency>
+
+		<dependency>
+			<artifactId>canova-api</artifactId>
+			<groupId>org.nd4j</groupId>
+			<version>${canova.version}</version>
 		</dependency>
 
 	</dependencies>

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jblas.FloatMatrix;
 
+import rd.data.DataStreamer;
 import rd.data.DataWriter;
 
 public class SimpleNetworkPerformanceEvaluator {

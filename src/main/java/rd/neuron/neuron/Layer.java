@@ -95,9 +95,9 @@ public class Layer {
 		sb.append(weights.getRows());
 		sb.append("    next Layer Count: ");
 		sb.append(weights.getColumns());
-		sb.append("\n"+"Weights: ");
+		sb.append("\n"+"Weights: ["+weights.length+"] ");
 		sb.append(weights);
-		sb.append("\nBias: ");
+		sb.append("\nBias: ["+bias.length+"] ");
 		sb.append(bias);
 		sb.append("\n\n");
 		

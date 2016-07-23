@@ -5,15 +5,14 @@
  */
 package rd.neuron.neuron.test;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
+import rd.data.DataStreamer;
 import rd.data.DataWriter;
 import rd.data.FileDataWriter;
-import rd.neuron.neuron.DataStreamer;
 import rd.neuron.neuron.FullyRandomLayerBuilder;
 import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.NetworkError;
@@ -37,10 +36,9 @@ public class TestTrainingNetwork_Worked2 {
 		input.add(new float[] { 1f, 1.0f }, 0f);
 		input.add(new float[] { 0f, 0.0f }, 0f);
 		input.add(new float[] { 1f, 0.0f }, 1f);
-
 		input.add(new float[] { 0f, 1.0f }, 1f);
 
-		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f,1f), Function.LOGISTIC, 2, 2, 1);
+		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f,1f), Function.LOGISTIC, 2, 3, 1);
 		DataWriter dw = new FileDataWriter("weights_short.csv",true);
 		SimpleNetworkPerformanceEvaluator snpe = new SimpleNetworkPerformanceEvaluator(dw);
 		System.out.println(network.getNumberOfLayers());

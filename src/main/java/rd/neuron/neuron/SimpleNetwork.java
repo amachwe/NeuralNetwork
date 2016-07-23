@@ -219,9 +219,11 @@ public class SimpleNetwork  implements Iterable<Layer>{
 		FloatMatrix delta = alpha.mul(outputActualLastHidden.mul(FloatMatrix.ones(outputActualLastHidden.rows,outputActualLastHidden.columns).sub(outputActualLastHidden)));
 		
 		FloatMatrix update = input.mmul(delta.transpose()).mul(learningRate);
-
+		FloatMatrix newWts = lastHidden.getWeights().sub(update);
+		
+		FloatMatrix newBias = lastHidden.getAllBias().sub(grad.mean()*learningRate);
 	
-		return new FloatMatrix[]{lastHidden.getWeights().sub(update),lastHidden.getAllBias().sub(grad.mul(learningRate))};
+		return new FloatMatrix[]{newWts,newBias};
 	}
 	
 	public FloatMatrix trainHiddenLayerWeights(int layer,float learningRate,FloatMatrix expected,FloatMatrix actuals,FloatMatrix input)

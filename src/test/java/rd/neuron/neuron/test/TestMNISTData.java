@@ -9,6 +9,7 @@ import org.junit.Test;
 import rd.data.ConsoleDataWriter;
 import rd.data.DataStreamer;
 import rd.data.MnistImageFile;
+import rd.data.MnistToDataStreamer;
 import rd.neuron.neuron.FullyRandomLayerBuilder;
 import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.SimpleNetwork;
@@ -22,52 +23,31 @@ public class TestMNISTData {
 
 	@Test
 	public void doMNISTTest() throws IOException {
-		DataStreamer streamer = new DataStreamer(784, 10);
+		DataStreamer streamerTrain = MnistToDataStreamer.createStreamer("d:\\ml stats\\mnist\\t10k-images.idx3-ubyte",
+				"d:\\ml stats\\mnist\\t10k-labels.idx1-ubyte");
+		System.out.println("Training Streamer Ready!");
 
-		MnistImageFile digitImage = new MnistImageFile("d:\\ml stats\\mnist\\t10k-images.idx3-ubyte", "r");
-		MnistLabelFile labelData = new MnistLabelFile("d:\\ml stats\\mnist\\t10k-labels.idx1-ubyte", "r");
-		final float max = 255f;
-		while (digitImage.getCurrentIndex() <= digitImage.getCount()) {
-			digitImage.nextImage();
+		DataStreamer streamerTest = MnistToDataStreamer.createStreamer("d:\\ml stats\\mnist\\train-images.idx3-ubyte",
+				"d:\\ml stats\\mnist\\train-labels.idx1-ubyte");
+		System.out.println("Testing Streamer Ready!");
 
-			labelData.next();
+		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f, 1f), Function.LOGISTIC, 784, 100,
+				10);
 
-			int lbl = labelData.readLabel();
-			int img[][] = digitImage.readImage();
-			float[] imgInput = new float[img.length*img[0].length];
-			int k=0;
-		
-			for(int i=0;i<img.length;i++)
-			{
-				for(int j=0;j<img[0].length;j++)
-				{
-				
-					imgInput[k++] = (float)(img[i][j]/max);
-				}
-				
-				
-			}
-		
-			
-			streamer.add(imgInput, digitToOneHotEncoding(lbl));
-
-		}
-		
-		
-
-		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f,1f), Function.LOGISTIC, 784, 15, 10);
-		
 		SimpleNetworkPerformanceEvaluator snpm = new SimpleNetworkPerformanceEvaluator(new ConsoleDataWriter());
 		// Back Prop
 		for (int i = 0; i < EPOCHS; i++) {
-			System.out.println(i*100f/EPOCHS);
-			if (!SGD) {
-				for (FloatMatrix item : streamer) {
+			if ((i * 100f / EPOCHS) % 10 == 0) {
+				System.out.println(i * 100f / EPOCHS);
 
-					FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(LEARNING_RATE, streamer.getOutput(item),
-							network.io(item));
+			}
+			if (!SGD) {
+				for (FloatMatrix item : streamerTrain) {
+
+					FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(LEARNING_RATE,
+							streamerTrain.getOutput(item), network.io(item));
 					FloatMatrix hiddenLayerNewWts[] = network.trainHiddenLayer(0, LEARNING_RATE,
-							streamer.getOutput(item), network.io(item), item);
+							streamerTrain.getOutput(item), network.io(item), item);
 
 					network.setOutputWeights(outputLayerNewWts[0]);
 					network.setOutputBias(outputLayerNewWts[1]);
@@ -75,12 +55,12 @@ public class TestMNISTData {
 					network.setBias(0, hiddenLayerNewWts[1]);
 				}
 			} else {
-				FloatMatrix item = streamer.getRandom();
+				FloatMatrix item = streamerTrain.getRandom();
 
-				FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(LEARNING_RATE, streamer.getOutput(item),
+				FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(LEARNING_RATE, streamerTrain.getOutput(item),
 						network.io(item));
-				FloatMatrix hiddenLayerNewWts[] = network.trainHiddenLayer(0, LEARNING_RATE, streamer.getOutput(item),
-						network.io(item), item);
+				FloatMatrix hiddenLayerNewWts[] = network.trainHiddenLayer(0, LEARNING_RATE,
+						streamerTrain.getOutput(item), network.io(item), item);
 
 				network.setOutputWeights(outputLayerNewWts[0]);
 				network.setOutputBias(outputLayerNewWts[1]);
@@ -88,38 +68,38 @@ public class TestMNISTData {
 				network.setBias(0, hiddenLayerNewWts[1]);
 
 			}
-			//snpm.evaluate(network, streamer);
+			// snpm.evaluate(network, streamer);
 		}
-		
-		for (FloatMatrix item : streamer) {
-			System.out.println(" > Actual: " + network.io(item) + "  > Expected: " + streamer.getOutput(item));
+
+		float totalScore = 0;
+		float count = 0;
+		for (FloatMatrix item : streamerTest) {
+			count++;
+			FloatMatrix actual = network.io(item);
+			FloatMatrix expected = streamerTest.getOutput(item);
+			float score = score(actual, expected);
+			System.out.println(count + "] Score: " + score + " > Actual: " + network.io(item) + "  > Expected: "
+					+ streamerTest.getOutput(item));
+			totalScore += score;
 		}
+
+		System.out.println(totalScore * 100f / count);
 	}
 
-	private float[] digitToOneHotEncoding(int digit) {
-		switch (digit) {
-		case 0:
-			return new float[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-		case 1:
-			return new float[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
-		case 2:
-			return new float[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 };
-		case 3:
-			return new float[] { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
-		case 4:
-			return new float[] { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };
-		case 5:
-			return new float[] { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
-		case 6:
-			return new float[] { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 };
-		case 7:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 };
-		case 8:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 };
-		case 9:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-		default:
-			return new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private float score(FloatMatrix actual, FloatMatrix expected) {
+		float score = 0f;
+		if (actual.length == expected.length) {
+			for (int i = 0; i < actual.length; i++) {
+				if (Math.abs(actual.get(i, 0) - expected.get(i, 0)) <= 0.1) {
+					score += 1;
+				} else {
+					score += 0;
+				}
+			}
+			return score / actual.length;
 		}
+
+		return score;
 	}
+
 }

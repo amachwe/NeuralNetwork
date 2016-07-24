@@ -4,9 +4,9 @@
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
-target/
-.settings/
-data/
+/target/
+/.settings/
+/data/
 
 
 # Mobile Tools for Java (J2ME)

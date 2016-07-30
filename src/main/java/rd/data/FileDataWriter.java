@@ -3,8 +3,6 @@ package rd.data;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,12 +22,12 @@ public class FileDataWriter implements DataWriter {
 	private boolean headerWritten = false;
 
 	@Override
-	public void write(Map<String, Float> row) {
+	public void write(Map<String, Object> row) {
 
 		try {
 			if (headerWritten) {
 				StringBuilder rowData = new StringBuilder(batchId.toString());
-				for (Float data : row.values()) {
+				for (Object data : row.values()) {
 					rowData.append(",");
 					rowData.append(data);
 
@@ -38,7 +36,7 @@ public class FileDataWriter implements DataWriter {
 				fw.write(rowData.toString());
 			} else {
 				StringBuilder rowData = new StringBuilder(batchId.toString());
-				for (Float data : row.values()) {
+				for (Object data : row.values()) {
 					rowData.append(",");
 					rowData.append(data);
 

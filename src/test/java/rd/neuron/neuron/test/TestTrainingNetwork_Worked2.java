@@ -18,6 +18,7 @@ import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
 import rd.neuron.neuron.SimpleNetworkPerformanceEvaluator;
+import rd.neuron.neuron.TrainNetwork;
 
 /**
  *
@@ -25,9 +26,9 @@ import rd.neuron.neuron.SimpleNetworkPerformanceEvaluator;
  */
 public class TestTrainingNetwork_Worked2 {
 
-	private boolean SGD = true;
+	private boolean useSGD = true;
 	private int EPOCHS = 100000;
-
+	private final float LEARNING_RATE = 0.05f;
 	@Test
 	public void doLayer() throws IOException {
 
@@ -47,34 +48,9 @@ public class TestTrainingNetwork_Worked2 {
 		FloatMatrix first = input.iterator().next();
 		// Back Prop
 		for (int i = 0; i < EPOCHS; i++) {
-			if (!SGD) {
-				for (FloatMatrix item : input) {
-
-					FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(0.05f, input.getOutput(item),
-							network.io(item));
-					FloatMatrix hiddenLayerNewWts[] = network.trainHiddenLayer(0, 0.05f, input.getOutput(item),
-							network.io(item), item);
-
-					network.setOutputWeights(outputLayerNewWts[0]);
-					network.setOutputBias(outputLayerNewWts[1]);
-					network.setWeights(0, hiddenLayerNewWts[0]);
-					network.setBias(0, hiddenLayerNewWts[1]);
-				}
-			} else {
-				FloatMatrix item = input.getRandom();
-
-				FloatMatrix outputLayerNewWts[] = network.trainOutputLayer(0.05f, input.getOutput(item),
-						network.io(item));
-				FloatMatrix hiddenLayerNewWts[] = network.trainHiddenLayer(0, 0.05f, input.getOutput(item),
-						network.io(item), item);
-
-				network.setOutputWeights(outputLayerNewWts[0]);
-				network.setOutputBias(outputLayerNewWts[1]);
-				network.setWeights(0, hiddenLayerNewWts[0]);
-				network.setBias(0, hiddenLayerNewWts[1]);
-
-			}
-			snpe.evaluate(network, input);
+			FloatMatrix item = input.getRandom();
+			TrainNetwork.train(network,item,input.getOutput(item),LEARNING_RATE);
+			snpe.evaluateErrorAndNetwork(network, input,LEARNING_RATE);
 		}
 		for (FloatMatrix item : input) {
 			System.out.println(item + " > Actual: " + network.io(item) + "  > Expected: " + input.getOutput(item));

@@ -49,7 +49,7 @@ public class DefinitionParser {
 
 	private int lineCount = 0;
 	private int noOfAttribs = 0, noOfInstances = 0;
-	private String noOfAttribs_Desc = "", title = "";
+	private String noOfAttribs_Desc = "";
 	private Section currentSection = Section.UNKNOWN;
 
 	private Map<Section, String> sectionMap = new LinkedHashMap<>();

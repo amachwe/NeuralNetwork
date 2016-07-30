@@ -5,15 +5,16 @@
  */
 package rd.neuron.neuron.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.neuron.neuron.Layer.Function;
 import rd.data.DataStreamer;
+import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
+import rd.neuron.neuron.TrainNetwork;
 import rd.neuron.neuron.UnitLayerBuilder;
 
 /**
@@ -52,19 +53,11 @@ public class TestTrainingNetwork_Worked {
 		// Back Prop
 		for (int i = 0; i < 10000; i++) {
 			for (FloatMatrix item : input) {
-				// System.out.println("Output: " + network.io(item));
+			
 
-				FloatMatrix[] outputLayerNewWts = network.trainOutputLayer(0.5f, input.getOutput(item),
-						network.io(item));
-				FloatMatrix[] hiddenLayerNewWts = network.trainHiddenLayer(0, 0.5f, input.getOutput(item),
-						network.io(item), item);
+				TrainNetwork.train(network, item,input.getOutput(item), 0.5f);
 
-				network.setOutputWeights(outputLayerNewWts[0]);
-				network.setOutputBias(outputLayerNewWts[1]);
-				network.setWeights(0, hiddenLayerNewWts[0]);
-				network.setBias(0, hiddenLayerNewWts[1]);
-
-				// System.out.println(network);
+				
 				if (i == 0) {
 					assertTrue(network.getWeight(1, 0, 0) == 0.3589165f);
 					assertTrue(network.getWeight(1, 1, 1) == 0.56137013f);

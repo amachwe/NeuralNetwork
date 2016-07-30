@@ -8,10 +8,11 @@ package rd.neuron.neuron.test;
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.neuron.neuron.Layer.Function;
 import rd.data.DataStreamer;
+import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
+import rd.neuron.neuron.TrainNetwork;
 import rd.neuron.neuron.UnitLayerBuilder;
 
 /**
@@ -38,9 +39,8 @@ public class TestTrainingNetwork {
 		FloatMatrix first = input.iterator().next();
 		// Stochastic
 		for (int i = 0; i < 100000; i++) {
-			for (FloatMatrix item : input) {
-				network.trainOutputLayerWeights(0.001f, input.getOutput(item), network.io(item));
-			}
+			FloatMatrix item = input.getRandom();
+			TrainNetwork.train(network,item,input.getOutput(item),0.05f);
 
 		}
 		for (FloatMatrix item : input) {

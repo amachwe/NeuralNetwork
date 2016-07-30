@@ -12,11 +12,20 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 
 	private final int inDataWidth, outDataWidth;
 
+	/**
+	 * 
+	 * @param inDataWidth - input data width
+	 * @param outDataWidth - output data width
+	 */
 	public DataStreamer(int inDataWidth, int outDataWidth) {
 		this.inDataWidth = inDataWidth;
 		this.outDataWidth = outDataWidth;
 	}
 
+	/**
+	 * 
+	 * @param data - Map of input and output float matrix (rows)
+	 */
 	public DataStreamer(Map<FloatMatrix, FloatMatrix> data) {
 		FloatMatrix key = data.keySet().iterator().next();
 		this.inDataWidth = key.getRows();
@@ -25,6 +34,11 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 	}
 	
 
+	/**
+	 * Add input output pair
+	 * @param data
+	 * @param output
+	 */
 	public void add(float[] data, float... output) {
 		if (data.length == inDataWidth) {
 			FloatMatrix inFm = new FloatMatrix(inDataWidth, 1);
@@ -43,6 +57,11 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 		}
 	}
 	
+	/**
+	 * Add input output pair
+	 * @param data
+	 * @param output
+	 */
 	public void add(int[] data, int... output) {
 		if (data.length == inDataWidth) {
 			FloatMatrix inFm = new FloatMatrix(inDataWidth, 1);
@@ -62,7 +81,10 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 	}
 	
 	
-	
+	/**
+	 * Randomly return an input
+	 * @return randomly selected input - use getOutput to obtain corresponding output
+	 */
 	public FloatMatrix getRandom()
 	{
 		int index = (int)(Math.random()*trainData.keySet().size());
@@ -81,11 +103,19 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 		return fm;
 	}
 
+	/**
+	 * Iterator
+	 */
 	@Override
 	public Iterator<FloatMatrix> iterator() {
 		return trainData.keySet().iterator();
 	}
 
+	/**
+	 * Get output from input
+	 * @param input - the input for which we need to get the output
+	 * @return get output
+	 */
 	public FloatMatrix getOutput(FloatMatrix input) {
 		return trainData.get(input);
 	}

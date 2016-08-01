@@ -3,7 +3,11 @@ package rd.neuron.neuron;
 import org.jblas.FloatMatrix;
 
 import rd.neuron.neuron.Layer.Function;
-
+/**
+ * Build a unit layer - where the weights and bias are set to 1.0
+ * @author azahar
+ *
+ */
 public class UnitLayerBuilder implements LayerBuilder{
 
 	@Override

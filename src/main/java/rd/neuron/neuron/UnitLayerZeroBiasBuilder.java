@@ -4,6 +4,11 @@ import org.jblas.FloatMatrix;
 
 import rd.neuron.neuron.Layer.Function;
 
+/**
+ * Build so that weights are set to 1.0 and bias to 0.0
+ * @author azahar
+ *
+ */
 public class UnitLayerZeroBiasBuilder implements LayerBuilder{
 
 	@Override

@@ -1,14 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package rd.neuron.neuron;
 
 import org.jblas.FloatMatrix;
 
 /**
- *
+ * Layer Class represents a layer of neurons and weights to input of that layer.
+ * 
  * @author azahar
  */
 public class Layer {
@@ -20,11 +17,22 @@ public class Layer {
 	private FloatMatrix outputNet;
 	private FloatMatrix outputActual;
 
+	/**
+	 * Activation function type
+	 * @author azahar
+	 *
+	 */
 	public static enum Function {
 
 		LOGISTIC, ReLU
 	};
 
+	/**
+	 * 
+	 * @param weights - weights for the layer
+	 * @param bias - bias for the neurons
+	 * @param function - activation function for the layer
+	 */
 	public Layer(FloatMatrix weights, FloatMatrix bias, Function function) {
 		this.function = function;
 
@@ -36,6 +44,12 @@ public class Layer {
 		return this.weights;
 	}
 
+	/**
+	 * 
+	 * @param inNeuron - 0 indexed
+	 * @param outNeuron - 0 indexed
+	 * @param newWt - new weight
+	 */
 	public void setWeight(int inNeuron, int outNeuron, float newWt) {
 		weights.put(inNeuron, outNeuron, newWt);
 	}
@@ -64,6 +78,11 @@ public class Layer {
 	{
 		return bias;
 	}
+	/**
+	 * Propagate input from previous layer
+	 * @param input - input vector to this layer
+	 * @return output for next layer
+	 */
 	public FloatMatrix io(FloatMatrix input) {
 		
 		FloatMatrix output = weights.transpose().mmul(input);
@@ -88,6 +107,9 @@ public class Layer {
 		return this.outputActual;
 	}
 
+	/**
+	 * Show string representation
+	 */
 	@Override
 	public String toString()
 	{

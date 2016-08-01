@@ -3,19 +3,31 @@ package rd.neuron.neuron;
 import org.jblas.FloatMatrix;
 
 import rd.neuron.neuron.Layer.Function;
-
+/**
+ * Build a fully connected random layer with a middle and max value
+ * @author azahar
+ *
+ */
 public class FullyRandomLayerBuilder implements LayerBuilder {
 
 	private final float mid, max;
 
+	/**
+	 * 
+	 * @param mid - middle value
+	 * @param max - max value
+	 */
 	public FullyRandomLayerBuilder(float mid, float max) {
 		this.mid = mid;
 		this.max = max;
 	}
 
+	/**
+	 * Default with random values between 0 and 1
+	 */
 	public FullyRandomLayerBuilder() {
 		this.mid = 0;
-		this.max = 0;
+		this.max = 1;
 	}
 
 	@Override

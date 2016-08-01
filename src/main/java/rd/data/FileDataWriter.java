@@ -5,7 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
-
+/**
+ * Write data to file
+ * @author azahar
+ *
+ */
 public class FileDataWriter implements DataWriter {
 
 	private final FileWriter fw;

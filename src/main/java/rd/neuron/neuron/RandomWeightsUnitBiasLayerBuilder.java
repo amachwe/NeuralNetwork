@@ -4,6 +4,11 @@ import org.jblas.FloatMatrix;
 
 import rd.neuron.neuron.Layer.Function;
 
+/**
+ * Create a fully connected network with random weights and biases (between 0 and 1)
+ * @author azahar
+ *
+ */
 public class RandomWeightsUnitBiasLayerBuilder implements LayerBuilder{
 
 	@Override

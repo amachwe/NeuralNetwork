@@ -8,7 +8,11 @@ import org.jblas.FloatMatrix;
 
 import rd.data.DeepNetworkInspector;
 import rd.neuron.neuron.Layer.Function;
-
+/**
+ * A simple feed forward Artificial Neural Network
+ * @author azahar
+ *
+ */
 public class SimpleNetwork implements Iterable<Layer> {
 
 	private final Integer numberOfLayers;
@@ -17,6 +21,12 @@ public class SimpleNetwork implements Iterable<Layer> {
 	private DeepNetworkInspector dni;
 	private int trainCount = 0;
 
+	/**
+	 * 
+	 * @param builder - layer builder
+	 * @param f - activation function
+	 * @param numberOfNeuronsInLayer - number of neurons in each layer (array): index 0 is input layer and last entry (array.length-1) the number of neurons in the output layer
+	 */
 	public SimpleNetwork(LayerBuilder builder, Function f, int... numberOfNeuronsInLayer) {
 		activationFunction = f;
 		numberOfLayers = numberOfNeuronsInLayer.length - 1;
@@ -25,10 +35,18 @@ public class SimpleNetwork implements Iterable<Layer> {
 		}
 	}
 
+	/**
+	 * Activate deep network inspection
+	 * @param dni
+	 */
 	public void activateDeepNetworkInspection(DeepNetworkInspector dni) {
 		this.dni = dni;
 	}
 
+	/**
+	 * Get number of layers
+	 * @return
+	 */
 	public Integer getNumberOfLayers() {
 		return numberOfLayers;
 	}
@@ -51,28 +69,51 @@ public class SimpleNetwork implements Iterable<Layer> {
 		return l.getWeight(targetNeuron, neuron);
 	}
 
+	/**
+	 * Get Weights
+	 * @param layer - 0 indexed
+	 * @return
+	 */
 	public FloatMatrix getWeights(int layer) {
 		return network.get(layer).getWeights();
 	}
 
+	/**
+	 * Set Weights
+	 * @param layer - 0 indexed
+	 * @param weightsNew - new weights matrix
+	 */
 	public void setWeights(int layer, FloatMatrix weightsNew) {
 		Layer l = network.get(layer);
 
 		l.setAllWeights(weightsNew);
 	}
 
+	/**
+	 * Set Bias
+	 * @param layer - 0 indexed
+	 * @param biasNew - new Bias vector
+	 */
 	public void setBias(int layer, FloatMatrix biasNew) {
 		Layer l = network.get(layer);
 
 		l.setAllBias(biasNew);
 	}
 
+	/**
+	 * Set Weights of output layer
+	 * @param weightsNew - new weights matrix for output layer
+	 */
 	public void setOutputWeights(FloatMatrix weightsNew) {
 		Layer l = network.get(this.numberOfLayers - 1);
 
 		l.setAllWeights(weightsNew);
 	}
 
+	/**
+	 * Set New Output Bias
+	 * @param biasNew - new Bias vector
+	 */
 	public void setOutputBias(FloatMatrix biasNew) {
 		Layer l = network.get(this.numberOfLayers - 1);
 
@@ -99,6 +140,13 @@ public class SimpleNetwork implements Iterable<Layer> {
 		return oldWt;
 	}
 
+	/**
+	 * Adjust bias
+	 * @param layer - 0 indexed
+	 * @param neuron - neuron number (0 indexed)
+	 * @param bias
+	 * @return
+	 */
 	public float adjustBias(int layer, int neuron, float bias) {
 		Layer l = network.get(layer);
 		float oldBias = l.getBias(neuron);
@@ -108,10 +156,21 @@ public class SimpleNetwork implements Iterable<Layer> {
 
 	}
 
+	/**
+	 * Propagate from input to output - through the full network
+	 * @param input - input values
+	 * @return output of network
+	 */
 	public FloatMatrix io(FloatMatrix input) {
 		return io(input, -1);
 	}
 
+	/**
+	 * Partial propagation till end layer
+	 * @param input - input values
+	 * @param tillLayer - 0 indexed layer index
+	 * @return partial output
+	 */
 	public FloatMatrix io(FloatMatrix input, int tillLayer) {
 		FloatMatrix temp = null;
 		int layerCount = 0;
@@ -129,6 +188,13 @@ public class SimpleNetwork implements Iterable<Layer> {
 		return temp;
 	}
 
+	/**
+	 * Train output layer
+	 * @param learningRate - learning rate value (around 0.01 - 0.05)
+	 * @param expected - expected output
+	 * @param actuals - actual output
+	 * @return new weights (index 0) and biases (index 1)
+	 */
 	public FloatMatrix[] trainOutputLayer(float learningRate, FloatMatrix expected, FloatMatrix actuals) {
 		// Get Weights to be trained.
 		Layer output = network.get(this.numberOfLayers - 1);
@@ -157,6 +223,15 @@ public class SimpleNetwork implements Iterable<Layer> {
 
 	}
 
+	/**
+	 * 
+	 * @param layer - train layer
+	 * @param learningRate - learning rate value (around 0.01 - 0.05)
+	 * @param expected - expected output (at output layer)
+	 * @param actuals - actual output (at output layer)
+	 * @param input - input
+	 * @return new weights (index 0) and biases (index 1)
+	 */
 	public FloatMatrix[] trainHiddenLayer(int layer, float learningRate, FloatMatrix expected, FloatMatrix actuals,
 			FloatMatrix input) {
 		// Get Weights to be trained.
@@ -196,6 +271,10 @@ public class SimpleNetwork implements Iterable<Layer> {
 
 	}
 
+	/**
+	 * Get output Layer
+	 * @return
+	 */
 	public Layer getOutputLayer() {
 		return network.get(this.numberOfLayers - 1);
 	}

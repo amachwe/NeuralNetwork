@@ -8,6 +8,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Definition parser for UCI Data Set Definition File. *** Still work in
+ * progress *** See: https://archive.ics.uci.edu/ml/datasets
+ * 
+ * @author azahar
+ *
+ */
 public class DefinitionParser {
 
 	public static final String CONTINUOUS = "continuous.", CLASS_ATTRIBUTE = "(class attribute)";
@@ -44,10 +51,8 @@ public class DefinitionParser {
 				parse(line);
 			}
 		});
-		System.out.println(sectionMap);
 	}
 
-	private int lineCount = 0;
 	private int noOfAttribs = 0, noOfInstances = 0;
 	private String noOfAttribs_Desc = "";
 	private Section currentSection = Section.UNKNOWN;
@@ -56,8 +61,6 @@ public class DefinitionParser {
 	private String sectionText = "";
 
 	private void parse(String text) {
-		System.out.println((++lineCount) + "] " + currentSection + " [" + text);
-
 		if (text.contains(KEY_TITLE)) {
 
 			updateSectionMap(sectionMap, currentSection, sectionText);

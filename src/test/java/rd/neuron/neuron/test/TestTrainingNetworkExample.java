@@ -12,26 +12,28 @@ import org.junit.Test;
 
 import rd.data.DataStreamer;
 import rd.neuron.neuron.Layer.Function;
-import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
 import rd.neuron.neuron.TrainNetwork;
 import rd.neuron.neuron.UnitLayerBuilder;
 
 /**
- *
+ * To validate the working of the network using values derived from:
+ * https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+ * 
  * @author azahar
  */
-public class TestTrainingNetwork_Worked {
+public class TestTrainingNetworkExample {
 
 	@Test
 	public void doLayer() {
 
-		NetworkError e = new NetworkError();
 		DataStreamer input = new DataStreamer(2, 2);
 		input.add(new float[] { 0.05f, 0.10f }, 0.01f, 0.99f);
 
 		SimpleNetwork network = new SimpleNetwork(new UnitLayerBuilder(), Function.LOGISTIC, 2, 2, 2);
 		System.out.println(network.getNumberOfLayers());
+		// Prepare the network with weights and biases as given in the worked
+		// example
 		network.adjustWeight(0, 0, 0, 0.15f);
 		network.adjustWeight(0, 0, 1, 0.20f);
 		network.adjustWeight(0, 1, 0, 0.25f);
@@ -49,15 +51,13 @@ public class TestTrainingNetwork_Worked {
 		network.adjustBias(1, 1, 0.6f);
 
 		System.out.println("Number of layers: " + network.getNumberOfLayers() + "\n" + network);
-		FloatMatrix first = input.iterator().next();
+
 		// Back Prop
 		for (int i = 0; i < 10000; i++) {
 			for (FloatMatrix item : input) {
-			
 
-				TrainNetwork.train(network, item,input.getOutput(item), 0.5f);
+				TrainNetwork.train(network, item, input.getOutput(item), 0.5f);
 
-				
 				if (i == 0) {
 					assertTrue(network.getWeight(1, 0, 0) == 0.3589165f);
 					assertTrue(network.getWeight(1, 1, 1) == 0.56137013f);

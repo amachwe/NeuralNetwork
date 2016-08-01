@@ -6,6 +6,11 @@ import java.util.Map;
 
 import org.jblas.FloatMatrix;
 
+/**
+ * Data Streamer - stream out inputs one at a time, also possible to get random entries
+ * @author azahar
+ *
+ */
 public class DataStreamer implements Iterable<FloatMatrix> {
 
 	private final Map<FloatMatrix, FloatMatrix> trainData = new HashMap<>();

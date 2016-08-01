@@ -7,9 +7,18 @@ import org.jblas.FloatMatrix;
 
 import rd.data.DataStreamer;
 import rd.data.DataWriter;
-
+/**
+ * Simple Network Performance Evaluator
+ * @author azahar
+ *
+ */
 public class SimpleNetworkPerformanceEvaluator {
 
+	/**
+	 * Keys for Key-Value pairs
+	 * @author azahar
+	 *
+	 */
 	public static enum Keys {
 		Weight, Bias, RowId, Error, LearningRate, BatchId
 	};
@@ -23,6 +32,11 @@ public class SimpleNetworkPerformanceEvaluator {
 
 	}
 	
+	/**
+	 * Evaluate Network Weights
+	 * @param sn - Simple Network
+	 * @param learningRate - constant learning rate (0.05 - 0.01)
+	 */
 	public void evaluateNetwork(SimpleNetwork sn, float learningRate)
 	{
 		Map<String,Object> row = new LinkedHashMap<>();
@@ -51,6 +65,12 @@ public class SimpleNetworkPerformanceEvaluator {
 
 	}
 
+	/**
+	 * Evaluate Error and Network Weights
+	 * @param sn - Simple Network
+	 * @param ds - Data Streamer
+	 * @param learningRate - constant learning rate (0.05 - 0.01)
+	 */
 	public void evaluateErrorAndNetwork(SimpleNetwork sn, DataStreamer ds, float learningRate) {
 
 		// Calc Error

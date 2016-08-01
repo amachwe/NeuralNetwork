@@ -4,7 +4,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.canova.image.mnist.MnistLabelFile;
-
+/**
+ * Convert MNIST Image/Label pairs to Data Streamer
+ * @author azahar
+ *
+ */
 public class MnistToDataStreamer {
 
 	private static final float MAX_SAT = 255f;

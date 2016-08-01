@@ -3,15 +3,18 @@ package rd.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.bson.Document;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 
+/**
+ * Write Delta update to Mongo db
+ * 
+ * @author azahar
+ *
+ */
 public class MongoDeltaWriter implements DataWriter {
 
 	private final List<Document> buffer = new ArrayList<>();
@@ -20,6 +23,7 @@ public class MongoDeltaWriter implements DataWriter {
 	private final MongoCollection<Document> collection;
 
 	/**
+	 * Setup the Mongo Delta Writer
 	 * 
 	 * @param host
 	 * @param port
@@ -30,11 +34,15 @@ public class MongoDeltaWriter implements DataWriter {
 
 		this.client = new MongoClient(host, port);
 
-	
 		this.collection = client.getDatabase(dbName).getCollection(collectionName);
 
 	}
 
+	/**
+	 * Process buffer (write into Mongo)
+	 * 
+	 * @param buffer
+	 */
 	private void processBuffer(List<Document> buffer) {
 
 		collection.insertMany(buffer);
@@ -43,6 +51,11 @@ public class MongoDeltaWriter implements DataWriter {
 
 	}
 
+	/**
+	 * Write data to the buffer, the data is not immediately persisted to the
+	 * database
+	 * 
+	 */
 	@Override
 	public void write(Map<String, Object> data) {
 		Document doc = new Document(data);
@@ -50,7 +63,12 @@ public class MongoDeltaWriter implements DataWriter {
 
 	}
 
-	public void insert(Document doc) {
+	/**
+	 * Insert into buffer
+	 * 
+	 * @param doc
+	 */
+	private void insert(Document doc) {
 
 		buffer.add(doc);
 
@@ -60,6 +78,7 @@ public class MongoDeltaWriter implements DataWriter {
 
 	}
 
+	@Override
 	public void close() {
 
 		if (buffer.size() > 0)

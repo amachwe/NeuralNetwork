@@ -5,17 +5,19 @@
  */
 package rd.neuron.neuron.test;
 
+import static org.junit.Assert.*;
+
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.neuron.neuron.Layer.Function;
 import rd.data.DataStreamer;
+import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.NetworkError;
 import rd.neuron.neuron.SimpleNetwork;
 import rd.neuron.neuron.UnitLayerBuilder;
 
 /**
- *
+ * Test Inputs to the Network
  * @author azahar
  */
 public class TestInputNetwork {
@@ -35,7 +37,7 @@ public class TestInputNetwork {
 		for (int i = 0; i < 100; i++) {
 			e.reset();
 			for (FloatMatrix item : input) {
-				e.localError(network.io(item), input.getOutput(item));
+				e.currentError(network.io(item), input.getOutput(item));
 			}
 			System.out.println("Old: " + e.getError());
 			float prevError = e.getError();
@@ -47,7 +49,7 @@ public class TestInputNetwork {
 
 			e.reset();
 			for (FloatMatrix item : input) {
-				e.localError(network.io(item), input.getOutput(item));
+				e.currentError(network.io(item), input.getOutput(item));
 
 			}
 
@@ -61,6 +63,7 @@ public class TestInputNetwork {
 
 		}
 		for (FloatMatrix item : input) {
+			assertTrue(item!=null);
 			System.out.println(item+" > Actual: "+network.io(item)+ "  > Expected: "+input.getOutput(item));
 		}
 	}

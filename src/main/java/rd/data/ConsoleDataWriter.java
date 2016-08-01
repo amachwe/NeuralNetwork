@@ -1,7 +1,11 @@
 package rd.data;
 
 import java.util.Map;
-
+/**
+ * Console Data Writer - write data to the error stream
+ * @author azahar
+ *
+ */
 public class ConsoleDataWriter implements DataWriter {
 
 	public void write(Map<String,Object> row)

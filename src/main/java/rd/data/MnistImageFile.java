@@ -9,6 +9,7 @@ import org.canova.image.mnist.MnistDbFile;
  * MNIST database image file. Contains additional header information for the
  * number of rows and columns per each entry.
  * 
+ * Thank you sina-masoud-ansari
  */
 public class MnistImageFile extends MnistDbFile {
     private int rows;

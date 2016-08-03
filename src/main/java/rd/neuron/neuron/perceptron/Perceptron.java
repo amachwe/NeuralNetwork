@@ -57,7 +57,7 @@ public class Perceptron {
 	/**
 	 * Train
 	 * @param ds - data streamer with training data
-	 * @param learningRate - small number (0.1)
+	 * @param learningRate - small number ( between 0.5 and 0.05)
 	 */
 	public void train(DataStreamer ds, float learningRate) {
 		float[] newWeights = weights.clone();

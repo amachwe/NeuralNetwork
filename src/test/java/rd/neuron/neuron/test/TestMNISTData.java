@@ -23,6 +23,8 @@ import rd.neuron.neuron.TrainNetwork;
  */
 public class TestMNISTData {
 
+	//mini-batch size is 1
+	
 	private static final double SAMPLE_RATE = 1e-6;
 	private static final int OUTPUT_LAYER_SIZE = 10;
 	private static final int HIDDEN_LAYER_SIZE = 15;
@@ -41,7 +43,7 @@ public class TestMNISTData {
 	private final int EPOCHS = 1000000;
 	private final int REPEATS = 1;
 	//Use Stochastic Descent or not
-	private final boolean useSGD = true;
+	private final boolean useSGD = false;
 	private final float LEARNING_RATE = 0.05f;
 
 	@Test

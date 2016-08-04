@@ -3,7 +3,11 @@ package rd.learning.statistics;
 import org.jblas.FloatMatrix;
 
 import rd.data.DataStreamer;
-
+/**
+ * Multi Class Logistic Regression 
+ * @author azahar
+ *
+ */
 public class MulticlassLogReg {
 
 	private FloatMatrix weights;
@@ -12,8 +16,10 @@ public class MulticlassLogReg {
 
 	/**
 	 * 
-	 * @param input - number of inputs
-	 * @param classes - number of classes
+	 * @param input
+	 *            - number of inputs
+	 * @param classes
+	 *            - number of classes
 	 */
 	public MulticlassLogReg(int input, int classes) {
 		this.classCount = classes;
@@ -26,6 +32,7 @@ public class MulticlassLogReg {
 
 	/**
 	 * Predict probability profile across all classes, given the input
+	 * 
 	 * @param input
 	 * @return probability profile across all classes
 	 */
@@ -51,24 +58,27 @@ public class MulticlassLogReg {
 
 	/**
 	 * Train the Multi-Class Log Reg model
-	 * @param ds - data stream
-	 * @param learningRate - learning rate
+	 * 
+	 * @param ds
+	 *            - data stream
+	 * @param learningRate
+	 *            - learning rate
 	 */
 	public void train(DataStreamer ds, float learningRate) {
-		float deltaWts = 0;
-		float deltaBias = 0;
 
 		FloatMatrix update_w = FloatMatrix.zeros(inputCount, classCount);
 		FloatMatrix update_b = FloatMatrix.zeros(inputCount, 1);
 
 		for (FloatMatrix item : ds) {
-			FloatMatrix outputs = predict(item);
+			FloatMatrix actualOutputs = predict(item);
+
 			for (int classN = 0; classN < this.classCount; classN++) {
 				FloatMatrix output = ds.getOutput(item);
 
-				float actualOutput = outputs.get(classN);
+				float actualOutput = actualOutputs.get(classN);
 				float expOutput = output.get(classN);
 				float delta = actualOutput - expOutput;
+
 				update_w.putColumn(classN, update_w.getColumn(classN).add(item.mul(delta)));
 				update_b.put(classN, update_b.get(classN) + delta);
 

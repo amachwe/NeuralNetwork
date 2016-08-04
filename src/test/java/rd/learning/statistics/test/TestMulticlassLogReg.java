@@ -1,32 +1,34 @@
 package rd.learning.statistics.test;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
+import rd.data.CSVToFlatClassDataStreamer;
+import rd.data.ClassHandler;
 import rd.data.DataStreamer;
 import rd.data.MnistToDataStreamer;
 import rd.learning.statistics.MulticlassLogReg;
 
 /**
  * Test Multi Class Logistic Regression
+ * 
  * @author azahar
  *
  */
 public class TestMulticlassLogReg {
 
 	/**
-	 * MNIST: Files for Labels/Images - Training and Testing - change to run tests
+	 * MNIST: Files for Labels/Images - Training and Testing - change to run
+	 * tests
 	 */
-	private static final String D_ML_STATS_MNIST_TRAIN_LABELS = "d:\\ml stats\\mnist\\train-labels.idx1-ubyte";
-	private static final String D_ML_STATS_MNIST_TRAIN_IMAGES = "d:\\ml stats\\mnist\\train-images.idx3-ubyte";
-	private static final String D_ML_STATS_MNIST_T10K_LABELS = "d:\\ml stats\\mnist\\t10k-labels.idx1-ubyte";
-	private static final String D_ML_STATS_MNIST_T10K_IMAGES = "d:\\ml stats\\mnist\\t10k-images.idx3-ubyte";
+	private static final String D_ML_STATS_MNIST_TRAIN_LABELS = "data\\train-labels.idx1-ubyte";
+	private static final String D_ML_STATS_MNIST_TRAIN_IMAGES = "data\\train-images.idx3-ubyte";
+	private static final String D_ML_STATS_MNIST_T10K_LABELS = "data\\t10k-labels.idx1-ubyte";
+	private static final String D_ML_STATS_MNIST_T10K_IMAGES = "data\\t10k-images.idx3-ubyte";
 
-	private static final int EPOCHS = 100000;
+	private static final int EPOCHS = 10000;
 
 	/**
 	 * Stand alone test with sample data
@@ -55,6 +57,7 @@ public class TestMulticlassLogReg {
 
 	/**
 	 * Calculate Prediction Error in model
+	 * 
 	 * @param ds
 	 * @param model
 	 * @return
@@ -74,7 +77,37 @@ public class TestMulticlassLogReg {
 	}
 
 	/**
+	 * Iris Data Set Test
+	 */
+	@Test
+	public void doIrisTest() throws IOException {
+		DataStreamer iris = (new CSVToFlatClassDataStreamer("data//iris.csv")).getFlatClassDataStreamer(4, 2,
+				new ClassHandler());
+		DataStreamer[] split = iris.split(0.6f);
+		System.out.println("Total: "+iris.getNumberOfUniqueInputs()+"     Split > Train: "+split[0].getNumberOfUniqueInputs()+"  Test: "+split[1].getNumberOfUniqueInputs());
+		MulticlassLogReg reg = new MulticlassLogReg(4, 2);
+		for (int i = 0; i < 2000; i++) {
+
+			reg.train(buildBatch(split[0], 10), 0.02f);
+
+		}
+		float count = 0, score = 0;
+		for (FloatMatrix input : split[1]) {
+			FloatMatrix prediction = reg.predict(input);
+			System.out.println(prediction + " -- " + iris.getOutput(input));
+			if (prediction.get(0) - iris.getOutput(input).get(0) < 0.1) {
+				score++;
+			}
+			count++;
+		}
+
+		System.out.println(score * 100 / count);
+
+	}
+
+	/**
 	 * MNIST Test
+	 * 
 	 * @throws IOException
 	 */
 	@Test
@@ -88,8 +121,8 @@ public class TestMulticlassLogReg {
 		System.out.println("Testing Streamer Ready!");
 		MulticlassLogReg mnistLogReg = new MulticlassLogReg(784, 10);
 		for (int i = 0; i < EPOCHS; i++) {
-			mnistLogReg.train(buildBatch(streamerTrain, 10), 0.01f);
-			System.out.println(i);
+			mnistLogReg.train(buildBatch(streamerTrain, 10), 0.15f);
+
 		}
 
 		System.out.println(error(streamerTest, mnistLogReg));
@@ -104,12 +137,19 @@ public class TestMulticlassLogReg {
 			totalScore += score;
 		}
 		float finalScore = totalScore * 100f / count;
-		assertTrue(finalScore > 0.89);
+
 		System.out.println("Done  " + finalScore);
 	}
 
-	
-
+	/**
+	 * Build Batch from Streamer
+	 * 
+	 * @param ds
+	 *            - original streamer
+	 * @param miniBatch
+	 *            - mini batch size
+	 * @return Batch streamer
+	 */
 	private DataStreamer buildBatch(DataStreamer ds, int miniBatch) {
 		DataStreamer batch = new DataStreamer(ds.getRandom().length, ds.getOutput(ds.getRandom()).length);
 		for (int i = 0; i < miniBatch; i++) {

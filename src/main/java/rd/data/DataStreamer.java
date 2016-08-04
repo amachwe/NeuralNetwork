@@ -6,21 +6,27 @@ import java.util.Map;
 
 import org.jblas.FloatMatrix;
 
+import opennlp.tools.ml.maxent.DataStream;
+
 /**
- * Data Streamer - stream out inputs one at a time, also possible to get random entries
+ * Data Streamer - stream out inputs one at a time, also possible to get random
+ * entries
+ * 
  * @author azahar
  *
  */
 public class DataStreamer implements Iterable<FloatMatrix> {
 
-	private final Map<FloatMatrix, FloatMatrix> trainData = new HashMap<>();
+	private final Map<FloatMatrix, FloatMatrix> streamData = new HashMap<>();
 
 	private final int inDataWidth, outDataWidth;
 
 	/**
 	 * 
-	 * @param inDataWidth - input data width
-	 * @param outDataWidth - output data width
+	 * @param inDataWidth
+	 *            - input data width
+	 * @param outDataWidth
+	 *            - output data width
 	 */
 	public DataStreamer(int inDataWidth, int outDataWidth) {
 		this.inDataWidth = inDataWidth;
@@ -29,18 +35,19 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 
 	/**
 	 * 
-	 * @param data - Map of input and output float matrix (rows)
+	 * @param data
+	 *            - Map of input and output float matrix (rows)
 	 */
 	public DataStreamer(Map<FloatMatrix, FloatMatrix> data) {
 		FloatMatrix key = data.keySet().iterator().next();
 		this.inDataWidth = key.getRows();
 		this.outDataWidth = data.get(key).getRows();
-		trainData.putAll(data);
+		streamData.putAll(data);
 	}
-	
 
 	/**
 	 * Add input output pair
+	 * 
 	 * @param data
 	 * @param output
 	 */
@@ -56,14 +63,15 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 			for (float item : output) {
 				outFm.put(i++, item);
 			}
-			trainData.put(inFm, outFm);
+			streamData.put(inFm, outFm);
 		} else {
 			System.err.println("Error data width does not match");
 		}
 	}
-	
+
 	/**
 	 * Add input output pair
+	 * 
 	 * @param data
 	 * @param output
 	 */
@@ -73,55 +81,86 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 			FloatMatrix outFm = new FloatMatrix(outDataWidth, 1);
 			int i = 0;
 			for (int item : data) {
-				inFm.put(i++, 0, (float)item);
+				inFm.put(i++, 0, (float) item);
 			}
 			i = 0;
 			for (int item : output) {
-				outFm.put(i++, (float)item);
+				outFm.put(i++, (float) item);
 			}
-			trainData.put(inFm, outFm);
+			streamData.put(inFm, outFm);
 		} else {
 			System.err.println("Error data width does not match");
 		}
 	}
-	
-	
+
+	/**
+	 * Split into two Data Streamers - for splitting up data into test and
+	 * training sets
+	 * 
+	 * @param ratio
+	 *            -the ratio of split, value 0.0 > and < 1.0 - if split > 0.5
+	 *            then DataStreamer in 0 position is bigger
+	 * @return split data streamer
+	 */
+	public DataStreamer[] split(float ratio) {
+
+		Map<FloatMatrix, FloatMatrix> _1 = new HashMap<>(), _2 = new HashMap<>();
+		for (FloatMatrix item : this) {
+			if (Math.random() <= ratio) {
+				_1.put(item, this.getOutput(item));
+			} else {
+				_2.put(item, this.getOutput(item));
+			}
+		}
+
+		return new DataStreamer[] { new DataStreamer(_1), new DataStreamer(_2) };
+	}
+
 	/**
 	 * Randomly return an input
-	 * @return randomly selected input - use getOutput to obtain corresponding output
+	 * 
+	 * @return randomly selected input - use getOutput to obtain corresponding
+	 *         output
 	 */
-	public FloatMatrix getRandom()
-	{
-		int index = (int)(Math.random()*trainData.keySet().size());
-		FloatMatrix fm=null;
-		int i=0;
-		for(FloatMatrix key: trainData.keySet())
-		{
-			if(i>=index)
-			{
+	public FloatMatrix getRandom() {
+		int index = (int) (Math.random() * streamData.keySet().size());
+		FloatMatrix fm = null;
+		int i = 0;
+		for (FloatMatrix key : streamData.keySet()) {
+			if (i >= index) {
 				return key;
 			}
 			i++;
 			fm = key;
 		}
-		
+
 		return fm;
 	}
 
+	/**
+	 * Get number of inputs (unique)
+	 * @return
+	 */
+	public int getNumberOfUniqueInputs()
+	{
+		return streamData.keySet().size();
+	}
 	/**
 	 * Iterator
 	 */
 	@Override
 	public Iterator<FloatMatrix> iterator() {
-		return trainData.keySet().iterator();
+		return streamData.keySet().iterator();
 	}
 
 	/**
 	 * Get output from input
-	 * @param input - the input for which we need to get the output
+	 * 
+	 * @param input
+	 *            - the input for which we need to get the output
 	 * @return get output
 	 */
 	public FloatMatrix getOutput(FloatMatrix input) {
-		return trainData.get(input);
+		return streamData.get(input);
 	}
 }

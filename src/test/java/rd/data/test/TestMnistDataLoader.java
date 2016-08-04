@@ -20,8 +20,8 @@ public class TestMnistDataLoader {
 
 	@Test
 	public void doCountTest() throws FileNotFoundException, IOException {
-		DataStreamer streamerTest = MnistToDataStreamer.createStreamer("d:\\ml stats\\mnist\\train-images.idx3-ubyte",
-				"d:\\ml stats\\mnist\\train-labels.idx1-ubyte");
+		DataStreamer streamerTest = MnistToDataStreamer.createStreamer("data\\train-images.idx3-ubyte",
+				"data\\train-labels.idx1-ubyte");
 		streamerTest.forEach(matrix -> assertNotNull(matrix));
 	}
 }

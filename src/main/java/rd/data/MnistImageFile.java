@@ -1,102 +1,108 @@
 package rd.data;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.canova.image.mnist.MnistDbFile;
 
 /**
- * From: https://github.com/sina-masoud-ansari/MNIST/blob/master/MnistImageFile.java
+ * From:
+ * https://github.com/sina-masoud-ansari/MNIST/blob/master/MnistImageFile.java
  * MNIST database image file. Contains additional header information for the
  * number of rows and columns per each entry.
  * 
  * Thank you sina-masoud-ansari
  */
 public class MnistImageFile extends MnistDbFile {
-    private int rows;
-    private int cols;
+	private int rows;
+	private int cols;
 
-    /**
-     * Creates new MNIST database image file ready for reading.
-     * 
-     * @param name
-     *            the system-dependent filename
-     * @param mode
-     *            the access mode
-     * @throws IOException
-     * @throws FileNotFoundException
-     */
-    public MnistImageFile(String name, String mode) throws FileNotFoundException, IOException {
-        super(name, mode);
+	/**
+	 * Creates new MNIST database image file ready for reading.
+	 * 
+	 * @param name
+	 *            the system-dependent filename
+	 * @param mode
+	 *            the access mode
+	 * @throws IOException
+	 * @throws FileNotFoundException
+	 */
+	public MnistImageFile(String name, String mode) throws FileNotFoundException, IOException {
+		super(name, mode);
 
-        // read header information
-        rows = readInt();
-        cols = readInt();
-    }
+		// read header information
+		rows = readInt();
+		cols = readInt();
+	}
 
-    /**
-     * Reads the image at the current position.
-     * 
-     * @return matrix representing the image
-     * @throws IOException
-     */
-    public int[][] readImage() throws IOException {
-        int[][] dat = new int[getRows()][getCols()];
-        for (int i = 0; i < getCols(); i++) {
-            for (int j = 0; j < getRows(); j++) {
-                dat[i][j] = readUnsignedByte();
-            }
-        }
-        return dat;
-    }
+	/**
+	 * Reads the image at the current position.
+	 * 
+	 * @return matrix representing the image
+	 * @throws IOException
+	 */
+	public int[][] readImage() throws IOException {
 
-    /**
-     * Move the cursor to the next image.
-     * 
-     * @throws IOException
-     */
-    public void nextImage() throws IOException {
-        super.next();
-    }
+		int[][] dat = new int[getRows()][getCols()];
+		for (int i = 0; i < getCols(); i++) {
+			for (int j = 0; j < getRows(); j++) {
 
-    /**
-     * Move the cursor to the previous image.
-     * 
-     * @throws IOException
-     */
-    public void prevImage() throws IOException {
-        super.prev();
-    }
+				dat[i][j] = readUnsignedByte();
 
-    @Override
-    protected int getMagicNumber() {
-        return 2051;
-    }
+			}
+		}
 
-    /**
-     * Number of rows per image.
-     * 
-     * @return int
-     */
-    public int getRows() {
-        return rows;
-    }
+		return dat;
+	}
 
-    /**
-     * Number of columns per image.
-     * 
-     * @return int
-     */
-    public int getCols() {
-        return cols;
-    }
+	/**
+	 * Move the cursor to the next image.
+	 * 
+	 * @throws IOException
+	 */
+	public void nextImage() throws IOException {
+		super.next();
+	}
 
-    @Override
-    public int getEntryLength() {
-        return cols * rows;
-    }
+	/**
+	 * Move the cursor to the previous image.
+	 * 
+	 * @throws IOException
+	 */
+	public void prevImage() throws IOException {
+		super.prev();
+	}
 
-    @Override
-    public int getHeaderSize() {
-        return super.getHeaderSize() + 8; // to more integers - rows and columns
-    }
+	@Override
+	protected int getMagicNumber() {
+		return 2051;
+	}
+
+	/**
+	 * Number of rows per image.
+	 * 
+	 * @return int
+	 */
+	public int getRows() {
+		return rows;
+	}
+
+	/**
+	 * Number of columns per image.
+	 * 
+	 * @return int
+	 */
+	public int getCols() {
+		return cols;
+	}
+
+	@Override
+	public int getEntryLength() {
+		return cols * rows;
+	}
+
+	@Override
+	public int getHeaderSize() {
+		return super.getHeaderSize() + 8; // to more integers - rows and columns
+	}
 }

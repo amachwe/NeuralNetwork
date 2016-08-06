@@ -3,8 +3,10 @@ package rd.learning.statistics;
 import org.jblas.FloatMatrix;
 
 import rd.data.DataStreamer;
+
 /**
- * Multi Class Logistic Regression 
+ * Multi Class Logistic Regression
+ * 
  * @author azahar
  *
  */
@@ -39,15 +41,23 @@ public class MulticlassLogReg {
 	public FloatMatrix predict(FloatMatrix input) {
 		FloatMatrix score = new FloatMatrix(1, this.classCount);
 
-		float sum = 0;
-
+		float max = 0;
 		for (int classN = 0; classN < this.classCount; classN++) {
 			float tempValue = weights.getColumn(classN).mul(input).sum() + bias.get(classN);
 			score.put(classN, tempValue);
-			sum += tempValue;
-		}
 
-		score = score.div(sum);
+			if (max < tempValue) {
+				max = tempValue;
+			}
+		}
+		for (int classN = 0; classN < this.classCount; classN++) {
+			if (score.get(classN) == max) {
+				score.put(classN, 1);
+			} else {
+				score.put(classN, 0);
+			}
+
+		}
 
 		return score;
 	}

@@ -53,7 +53,7 @@ public class TestPerceptron {
 	
 	/**
 	 * 
-	 * XOR Gate should fail because single layer perceptrons cannot approximate the XOR function
+	 * XOR Gate should give poor performance because single layer perceptrons cannot approximate the XOR function
 	 */
 	@Test
 	public void doXORTest() {

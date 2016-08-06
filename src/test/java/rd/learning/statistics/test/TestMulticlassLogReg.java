@@ -8,7 +8,6 @@ import org.junit.Test;
 import rd.data.CSVToFlatClassDataStreamer;
 import rd.data.ClassHandler;
 import rd.data.DataStreamer;
-import rd.data.MnistToDataStreamer;
 import rd.learning.statistics.MulticlassLogReg;
 
 /**
@@ -19,15 +18,7 @@ import rd.learning.statistics.MulticlassLogReg;
  */
 public class TestMulticlassLogReg {
 
-	/**
-	 * MNIST: Files for Labels/Images - Training and Testing - change to run
-	 * tests
-	 */
-	private static final String D_ML_STATS_MNIST_TRAIN_LABELS = "data\\train-labels.idx1-ubyte";
-	private static final String D_ML_STATS_MNIST_TRAIN_IMAGES = "data\\train-images.idx3-ubyte";
-	private static final String D_ML_STATS_MNIST_T10K_LABELS = "data\\t10k-labels.idx1-ubyte";
-	private static final String D_ML_STATS_MNIST_T10K_IMAGES = "data\\t10k-images.idx3-ubyte";
-
+	private static final int TRIES = 1000;
 	private static final int EPOCHS = 10000;
 
 	/**
@@ -81,64 +72,34 @@ public class TestMulticlassLogReg {
 	 */
 	@Test
 	public void doIrisTest() throws IOException {
-		DataStreamer iris = (new CSVToFlatClassDataStreamer("data//iris.csv")).getFlatClassDataStreamer(4, 2,
-				new ClassHandler());
-		DataStreamer[] split = iris.split(0.6f);
-		System.out.println("Total: "+iris.getNumberOfUniqueInputs()+"     Split > Train: "+split[0].getNumberOfUniqueInputs()+"  Test: "+split[1].getNumberOfUniqueInputs());
-		MulticlassLogReg reg = new MulticlassLogReg(4, 2);
-		for (int i = 0; i < 2000; i++) {
+		for (int i = 0; i < TRIES; i++) {
+			DataStreamer iris = (new CSVToFlatClassDataStreamer("data//iris.csv")).getFlatClassDataStreamer(4, 2,
+					new ClassHandler());
+			DataStreamer[] split = iris.split(0.3f + (float) (0.3 * Math.random()));
 
-			reg.train(buildBatch(split[0], 10), 0.02f);
+			int trainSize = split[0].getNumberOfUniqueInputs();
+			int testSize = split[1].getNumberOfUniqueInputs();
 
-		}
-		float count = 0, score = 0;
-		for (FloatMatrix input : split[1]) {
-			FloatMatrix prediction = reg.predict(input);
-			System.out.println(prediction + " -- " + iris.getOutput(input));
-			if (prediction.get(0) - iris.getOutput(input).get(0) < 0.1) {
-				score++;
+			MulticlassLogReg reg = new MulticlassLogReg(4, 2);
+			for (int iter = 0; iter < 2000; iter++) {
+
+				reg.train(buildBatch(split[0], 10), 0.02f);
+
 			}
-			count++;
+			float count = 0, score = 0;
+			for (FloatMatrix input : split[1]) {
+				FloatMatrix prediction = reg.predict(input);
+				// System.out.println(prediction + " -- " +
+				// iris.getOutput(input));
+				if (prediction.get(0) - iris.getOutput(input).get(0) < 0.1) {
+					score++;
+				}
+				count++;
+			}
+
+			System.out.println(i + "," + trainSize + "," + testSize + "," + (score * 100 / count));
 		}
 
-		System.out.println(score * 100 / count);
-
-	}
-
-	/**
-	 * MNIST Test
-	 * 
-	 * @throws IOException
-	 */
-	@Test
-	public void doMNISTTest() throws IOException {
-		DataStreamer streamerTrain = MnistToDataStreamer.createStreamer(D_ML_STATS_MNIST_T10K_IMAGES,
-				D_ML_STATS_MNIST_T10K_LABELS);
-		System.out.println("Training Streamer Ready!");
-
-		DataStreamer streamerTest = MnistToDataStreamer.createStreamer(D_ML_STATS_MNIST_TRAIN_IMAGES,
-				D_ML_STATS_MNIST_TRAIN_LABELS);
-		System.out.println("Testing Streamer Ready!");
-		MulticlassLogReg mnistLogReg = new MulticlassLogReg(784, 10);
-		for (int i = 0; i < EPOCHS; i++) {
-			mnistLogReg.train(buildBatch(streamerTrain, 10), 0.15f);
-
-		}
-
-		System.out.println(error(streamerTest, mnistLogReg));
-		float totalScore = 0;
-		float count = 0;
-		for (FloatMatrix item : streamerTest) {
-			count++;
-
-			FloatMatrix actual = mnistLogReg.predict(item);
-			FloatMatrix expected = streamerTest.getOutput(item);
-			float score = score(actual, expected);
-			totalScore += score;
-		}
-		float finalScore = totalScore * 100f / count;
-
-		System.out.println("Done  " + finalScore);
 	}
 
 	/**
@@ -160,28 +121,4 @@ public class TestMulticlassLogReg {
 		return batch;
 	}
 
-	/**
-	 * Score the network
-	 * 
-	 * @param actual
-	 *            - actual output
-	 * @param expected
-	 *            - expected output
-	 * @return
-	 */
-	private float score(FloatMatrix actual, FloatMatrix expected) {
-		float score = 0f;
-		if (actual.length == expected.length) {
-			for (int i = 0; i < actual.length; i++) {
-				if (Math.abs(actual.get(i, 0) - expected.get(i, 0)) <= 0.1) {
-					score += 1;
-				} else {
-					score += 0;
-				}
-			}
-			return score / actual.length;
-		}
-
-		return score;
-	}
 }

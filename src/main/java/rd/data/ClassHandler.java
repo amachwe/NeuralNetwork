@@ -41,9 +41,7 @@ public class ClassHandler {
 	 */
 	public float[] getFlatClass(String classId, int width) {
 		float[] flatClass = new float[width];
-		for (int i = 0; i < width; i++) {
-			flatClass[i] = 0;
-		}
+
 		if (classData.containsKey(classId)) {
 			flatClass[classData.get(classId)] = 1;
 

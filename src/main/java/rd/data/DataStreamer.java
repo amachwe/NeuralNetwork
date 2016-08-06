@@ -3,10 +3,9 @@ package rd.data;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.jblas.FloatMatrix;
-
-import opennlp.tools.ml.maxent.DataStream;
 
 /**
  * Data Streamer - stream out inputs one at a time, also possible to get random
@@ -139,16 +138,30 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 
 	/**
 	 * Get number of inputs (unique)
+	 * 
 	 * @return
 	 */
-	public int getNumberOfUniqueInputs()
-	{
+	public int getNumberOfUniqueInputs() {
 		return streamData.keySet().size();
 	}
+
 	/**
-	 * Iterator
+	 * Data Streamer to CSV Stream
+	 * @return CSV Stream
 	 */
+	public Stream<String> toCsvStream() {
+		return streamData.keySet().stream()
+				.map(item -> item.toString().replaceAll(";", ",").replaceAll("\\[", "").replaceAll("\\]", "") + ","
+						+ getOutput(item).toString().replaceAll("\\[", "").replaceAll("\\]", ""));
+
+	}
+
 	@Override
+	/**
+	 * Iterator - returns iterator for data
+	 * 
+	 * @return data streamer
+	 */
 	public Iterator<FloatMatrix> iterator() {
 		return streamData.keySet().iterator();
 	}

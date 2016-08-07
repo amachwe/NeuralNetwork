@@ -11,7 +11,6 @@ import rd.data.ClassificationDataGenerator;
 import rd.data.ConfusionMatrix;
 import rd.data.DataStreamer;
 import rd.learning.statistics.MulticlassLogReg;
-import rd.neuron.neuron.perceptron.Perceptron;
 
 /**
  * Test Multi Class Logistic Regression
@@ -25,7 +24,8 @@ public class TestMulticlassLogReg {
 	private static final int EPOCHS = 10000;
 
 	/**
-	 * OR Test which should work very well as OR function data is linearly separable
+	 * OR Test which should work very well as OR function data is linearly
+	 * separable
 	 */
 	@Test
 	public void doORTest() {
@@ -51,12 +51,12 @@ public class TestMulticlassLogReg {
 				int actual = (int) input.getOutput(item).get(0);
 				float calculated = reg.predict(item).get(0);
 				System.out.println(item + "  " + reg.predict(item));
-				if (actual == calculated ) {
+				if (actual == calculated) {
 					cm.incTP();
-			
-				} else if (actual < calculated ) {
+
+				} else if (actual < calculated) {
 					cm.incFP();
-				} else if (actual > calculated ) {
+				} else if (actual > calculated) {
 					cm.incFN();
 				}
 			}
@@ -64,6 +64,7 @@ public class TestMulticlassLogReg {
 
 		}
 	}
+
 	/**
 	 * XOR Test - should fail badly as XOR data is not linearly separable.
 	 */
@@ -91,12 +92,12 @@ public class TestMulticlassLogReg {
 				int actual = (int) input.getOutput(item).get(0);
 				float calculated = reg.predict(item).get(0);
 				System.out.println(item + "  " + reg.predict(item));
-				if (actual == calculated ) {
+				if (actual == calculated) {
 					cm.incTP();
-			
-				} else if (actual < calculated ) {
+
+				} else if (actual < calculated) {
 					cm.incFP();
-				} else if (actual > calculated ) {
+				} else if (actual > calculated) {
 					cm.incFN();
 				}
 			}

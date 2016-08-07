@@ -28,7 +28,7 @@ public class MulticlassLogReg {
 		this.inputCount = input;
 
 		weights = FloatMatrix.rand(inputCount, classCount);
-		bias = FloatMatrix.rand(inputCount, 1);
+		bias = FloatMatrix.rand(classCount, 1);
 
 	}
 
@@ -62,8 +62,22 @@ public class MulticlassLogReg {
 		return score;
 	}
 
+	/**
+	 * Get the Weights
+	 * 
+	 * @return - a COPY of the weight
+	 */
 	public FloatMatrix getWeights() {
-		return weights;
+		return (new FloatMatrix()).copy(weights);
+	}
+
+	/**
+	 * Get the bias
+	 * 
+	 * @return - a COPY of the bias
+	 */
+	public FloatMatrix getBias() {
+		return (new FloatMatrix()).copy(bias);
 	}
 
 	/**
@@ -77,7 +91,7 @@ public class MulticlassLogReg {
 	public void train(DataStreamer ds, float learningRate) {
 
 		FloatMatrix update_w = FloatMatrix.zeros(inputCount, classCount);
-		FloatMatrix update_b = FloatMatrix.zeros(inputCount, 1);
+		FloatMatrix update_b = FloatMatrix.zeros(classCount, 1);
 
 		for (FloatMatrix item : ds) {
 			FloatMatrix actualOutputs = predict(item);

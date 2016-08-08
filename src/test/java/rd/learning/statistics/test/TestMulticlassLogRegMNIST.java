@@ -19,7 +19,7 @@ public class TestMulticlassLogRegMNIST {
 	private static final String D_ML_STATS_MNIST_T10K_LABELS = "data\\t10k-labels.idx1-ubyte";
 	private static final String D_ML_STATS_MNIST_T10K_IMAGES = "data\\t10k-images.idx3-ubyte";
 
-	private static final int EPOCHS = 10000;
+	private static final int EPOCHS = 100;
 
 	/**
 	 * MNIST Test
@@ -100,7 +100,7 @@ public class TestMulticlassLogRegMNIST {
 		}
 		return batch;
 	}
-	
+
 	/**
 	 * Calculate Prediction Error in model
 	 * 

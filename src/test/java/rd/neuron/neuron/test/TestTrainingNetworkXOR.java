@@ -6,6 +6,8 @@
 package rd.neuron.neuron.test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jblas.FloatMatrix;
 import org.junit.Test;
@@ -39,7 +41,7 @@ public class TestTrainingNetworkXOR {
 		input.add(new float[] { 1f, 0.0f }, 1f);
 		input.add(new float[] { 0f, 1.0f }, 1f);
 
-		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f, 1f), Function.LOGISTIC, 2, 3, 1);
+		SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0f, 1f), Function.LOGISTIC, 2, 2, 1);
 		DataWriter dw = new FileDataWriter("weights_short.csv", true);
 		SimpleNetworkPerformanceEvaluator snpe = new SimpleNetworkPerformanceEvaluator(dw);
 		System.out.println(network.getNumberOfLayers());
@@ -52,8 +54,11 @@ public class TestTrainingNetworkXOR {
 			TrainNetwork.train(network, item, input.getOutput(item), LEARNING_RATE);
 			snpe.evaluateErrorAndNetwork(network, input, LEARNING_RATE);
 		}
+		
+		Map<Integer,FloatMatrix> activation = new HashMap<>();
 		for (FloatMatrix item : input) {
-			System.out.println(item + " > Actual: " + network.io(item) + "  > Expected: " + input.getOutput(item));
+			System.out.println(item + " > Actual: " + network.io(item,activation) + "  > Expected: " + input.getOutput(item)+"\n"+activation);
+			
 		}
 		System.out.println(network);
 

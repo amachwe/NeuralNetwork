@@ -16,6 +16,24 @@
 	</properties>
 
 	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.storm/storm-core -->
+		<dependency>
+			<groupId>org.apache.storm</groupId>
+			<artifactId>storm-core</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.opennlp</groupId>
+			<artifactId>opennlp-tools</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.julielab/aliasi-lingpipe -->
+		<dependency>
+			<groupId>de.julielab</groupId>
+			<artifactId>aliasi-lingpipe</artifactId>
+			<version>4.1.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
@@ -89,6 +107,8 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.3.0</version>
 		</dependency>
+
+		
 
 	</dependencies>
 </project>

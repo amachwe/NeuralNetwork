@@ -62,7 +62,9 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 			for (float item : output) {
 				outFm.put(i++, item);
 			}
-			streamData.put(inFm, outFm);
+			synchronized (this) {
+				streamData.put(inFm, outFm);
+			}
 		} else {
 			System.err.println("Error data width does not match");
 		}
@@ -86,7 +88,9 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 			for (int item : output) {
 				outFm.put(i++, (float) item);
 			}
-			streamData.put(inFm, outFm);
+			synchronized (this) {
+				streamData.put(inFm, outFm);
+			}
 		} else {
 			System.err.println("Error data width does not match");
 		}
@@ -147,6 +151,7 @@ public class DataStreamer implements Iterable<FloatMatrix> {
 
 	/**
 	 * Data Streamer to CSV Stream
+	 * 
 	 * @return CSV Stream
 	 */
 	public Stream<String> toCsvStream() {

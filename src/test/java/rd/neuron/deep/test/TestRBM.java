@@ -36,13 +36,13 @@ public class TestRBM {
 	private final int nVisible = nVisibleEach * patterns;
 
 	// Number of hidden units
-	private final int nHidden = 6;
+	private final int nHidden = 8;
 
 	// Data for training, testing and output (for comparing)
 	private final int[][] trainX = new int[trainN][nVisible], testX = new int[testN][nVisible];
 	private final double[][] reconstrX = new double[testN][nVisible];
 
-	private final int epochs = 1000;
+	private final int epochs = 10000;
 	private float learningRate = 0.2f;
 
 	// Mini-batch size and number of instances of mini-batches

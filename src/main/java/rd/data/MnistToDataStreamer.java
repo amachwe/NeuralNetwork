@@ -106,5 +106,7 @@ public class MnistToDataStreamer {
 			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		}
 	}
+	
+	
 
 }

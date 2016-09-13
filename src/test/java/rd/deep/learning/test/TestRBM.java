@@ -130,17 +130,23 @@ public class TestRBM {
 		for (int pattern = 0; pattern < patterns; pattern++) {
 
 			System.out.printf("Class%d\n", pattern + 1);
-
+			int delta = 0;
 			for (int n = 0; n < testNEach; n++) {
 
 				int n_ = pattern * testNEach + n;
-
+			
+				
 				System.out.print(Arrays.toString(testX[n_]) + " -> ");
 				System.out.print("[");
 				for (int i = 0; i < nVisible - 1; i++) {
+					int val = reconstrX[n_][i] >= 0.5f ? 1 : 0;
+					delta+=Math.abs(val-testX[n_][i]);
 					System.out.printf("%.5f, ", reconstrX[n_][i]);
 				}
+				int val = reconstrX[n_][nVisible-1] >= 0.5f ? 1 : 0;
+				delta+=Math.abs(val-testX[n_][nVisible-1]);
 				System.out.printf("%.5f]\n", reconstrX[n_][nVisible - 1]);
+				System.out.println("Delta: "+(Math.abs(delta-nVisible)*100f/nVisible));
 			}
 
 			System.out.println();

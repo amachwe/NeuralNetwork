@@ -132,9 +132,7 @@ public class RBM {
 	}
 
 	public void sampleHGivenV(int[] v0Sample, float[] mean, int[] sample) {
-		System.out.println("\nV Sample: "+Arrays.toString(v0Sample));
-		System.out.println("Means: "+Arrays.toString(mean));
-		System.out.println("Sample: "+Arrays.toString(sample));
+
 		for (int j = 0; j < nHidden; j++) {
 			mean[j] = propUp(v0Sample, j);
 			sample[j] = binomial(1, mean[j]);
@@ -142,9 +140,7 @@ public class RBM {
 	}
 
 	public void sampleVGivenH(int[] h0Sample, float[] mean, int[] sample) {
-		System.out.println("\nH Sample: "+Arrays.toString(h0Sample));
-		System.out.println("Means: "+Arrays.toString(mean));
-		System.out.println("Sample: "+Arrays.toString(sample));
+
 		for (int i = 0; i < nVisible; i++) {
 			mean[i] = propDown(h0Sample, i);
 			sample[i] = binomial(1, mean[i]);

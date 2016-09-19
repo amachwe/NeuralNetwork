@@ -1,15 +1,29 @@
 package rd.neuron.deep;
 
+/**
+ * Abstract class to add processing/post processing functions for Layer
+ * @author azahar
+ *
+ */
 public abstract class LayerDecorator implements NeuralElement {
 
 	protected final NeuralElement l;
-
+/**
+ * 
+ * @param l - Neural Element to be decorated
+ */
 	public LayerDecorator(NeuralElement l) {
 		this.l = l;
 	}
 
+	/**
+	 * Process 
+	 */
 	public abstract double[] process(int[] in, Direction d);
 
+	/**
+	 * Post process
+	 */
 	public abstract int[] postProcess(double[] in);
 
 	@Override

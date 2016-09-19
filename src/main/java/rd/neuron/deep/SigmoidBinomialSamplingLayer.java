@@ -2,6 +2,12 @@ package rd.neuron.deep;
 
 import java.util.Random;
 
+/**
+ * As name suggest - process method uses sigmoid and post process uses Binomial Trial 
+ * 
+ * @author azahar
+ *
+ */
 public class SigmoidBinomialSamplingLayer extends LayerDecorator {
 
 	private final Random rnd;

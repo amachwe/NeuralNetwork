@@ -10,6 +10,8 @@ import org.jblas.FloatMatrix;
 /**
  * Data Streamer - stream out inputs one at a time, also possible to get random
  * entries
+ * Each new input vector is stored as a column vector.
+ * Thus each column is a new input
  * 
  * @author azahar
  *

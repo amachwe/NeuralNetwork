@@ -9,6 +9,12 @@ import org.junit.Test;
 
 import rd.neuron.neuron.StochasticLayer;
 
+/**
+ * Test Stochastic Layer for processing and training.
+ * (Based on JBLAS Matrix Library).
+ * @author azahar
+ *
+ */
 public class TestStochasticLayer {
 
 	@Test
@@ -29,7 +35,7 @@ public class TestStochasticLayer {
 		output.put(0, 0,1f).put(0, 1,1f).put(0, 2,1f);
 		System.out.println(sl.oi(output));
 		
-		sl.train(input, 1,10, 0.02f);
+		sl.contrastiveDivergence(input,10, 0.02f);
 
 	}
 }

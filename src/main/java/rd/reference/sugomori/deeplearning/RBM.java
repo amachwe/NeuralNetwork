@@ -1,11 +1,15 @@
-package rd.deep.learning;
+package rd.reference.sugomori.deeplearning;
 
 import java.util.Random;
 
-import rd.data.DistributionStructure;
 import rd.data.TimedDistributionStructure;
-//import static DeepLearning.utils.*;
 
+/**
+ * Implementation for Restricted Boltzmann Machine - as in the book
+ * Java Deep Learning Essentials - Y Sugomori
+ * @author ysugomori
+ *
+ */
 public class RBM {
 	public int N;
 	public int n_visible;
@@ -73,6 +77,12 @@ public class RBM {
 		return sb.toString();
 	}
 
+	/**
+	 * Constrastive Divergence Training
+	 * @param input - input vector
+	 * @param lr - learning rate
+	 * @param k - number of CD steps
+	 */
 	public void contrastive_divergence(int[] input, double lr, int k) {
 		double[] ph_mean = new double[n_hidden];
 		int[] ph_sample = new int[n_hidden];

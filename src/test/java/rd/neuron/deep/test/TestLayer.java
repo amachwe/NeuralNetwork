@@ -10,6 +10,11 @@ import rd.neuron.deep.NeuralElement;
 import rd.neuron.deep.SigmoidBinomialSamplingLayer;
 import rd.neuron.deep.training.ContrastiveDivergence;
 
+/**
+ * Test Layer Neural Element with Contrastive Divergence
+ * @author azahar
+ *
+ */
 public class TestLayer {
 
 	Random rnd = new Random(1234l);

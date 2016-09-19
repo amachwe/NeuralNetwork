@@ -9,9 +9,13 @@ import java.util.Random;
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.deep.learning.RBM;
-import rd.neuron.neuron.StochasticLayer;
 
+import rd.neuron.neuron.StochasticLayer;
+/**
+ * JBLAS Matrix Library based RBM Test - pattern test is as described in Deep Learning Essentials by Sugomori
+ * @author azahar
+ *
+ */
 public class TestRBM_JBLAS {
 
 	private final Random rand = new Random(123);
@@ -75,9 +79,9 @@ public class TestRBM_JBLAS {
 				for (int i = 0; i < nVisible; i++) {
 					if ((n_ >= trainNEach * pattern && n_ < trainNEach * (pattern + 1))
 							&& (i >= nVisibleEach * pattern && i < nVisibleEach * (pattern + 1))) {
-						trainX[n_][i] = RBM.binomial(1, 1 - pNoiseTrain, rand);
+						trainX[n_][i] = binomial(1, 1 - pNoiseTrain, rand);
 					} else {
-						trainX[n_][i] = RBM.binomial(1, pNoiseTrain, rand);
+						trainX[n_][i] = binomial(1, pNoiseTrain, rand);
 					}
 				}
 			}
@@ -89,9 +93,9 @@ public class TestRBM_JBLAS {
 				for (int i = 0; i < nVisible; i++) {
 					if ((n_ >= testNEach * pattern && n_ < testNEach * (pattern + 1))
 							&& (i >= nVisibleEach * pattern && i < nVisibleEach * (pattern + 1))) {
-						testX[n_][i] = RBM.binomial(1, 1 - pNoiseTest, rand);
+						testX[n_][i] = binomial(1, 1 - pNoiseTest, rand);
 					} else {
-						testX[n_][i] = RBM.binomial(1, pNoiseTest, rand);
+						testX[n_][i] = binomial(1, pNoiseTest, rand);
 					}
 				}
 			}
@@ -124,7 +128,7 @@ public class TestRBM_JBLAS {
 					for (int i = 0; i < nVisible; i++) {
 						input.put(i, 0, trainMiniBatch[batch][item][i]);
 					}
-					layer.train(input, input.columns, 10, learningRate);
+					layer.contrastiveDivergence(input,  10, learningRate);
 				}
 			}
 			learningRate *= 0.995;
@@ -175,5 +179,21 @@ public class TestRBM_JBLAS {
 			System.out.println();
 		}
 
+	}
+	
+	public static int binomial(int n, double p, Random rng) {
+		if (p < 0 || p > 1)
+			return 0;
+
+		int c = 0;
+		double r;
+
+		for (int i = 0; i < n; i++) {
+			r = rng.nextDouble();
+			if (r < p)
+				c++;
+		}
+
+		return c;
 	}
 }

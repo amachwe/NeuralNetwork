@@ -1,7 +1,11 @@
 package rd.neuron.deep;
 
 import java.util.Arrays;
-
+/**
+ * Layer implementation using simple Arrays
+ * @author azahar
+ *
+ */
 public class Layer implements NeuralElement {
 
 	private final int numInputN, numOutputN;

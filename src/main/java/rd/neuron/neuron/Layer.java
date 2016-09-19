@@ -5,7 +5,6 @@ import org.jblas.FloatMatrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Layer Class represents a layer of neurons and weights to input of that layer.
  * 
@@ -21,7 +20,6 @@ public class Layer {
 
 	private FloatMatrix outputNet;
 	private FloatMatrix outputActual;
-	private FloatMatrix revOutputNet, revOutputActual;
 
 	/**
 	 * Activation function type
@@ -175,7 +173,7 @@ public class Layer {
 		FloatMatrix output = weights.mmul(input);
 
 		output = output.add(inputBias);
-		this.revOutputNet = output;
+
 		for (int i = 0; i < output.getRows(); i++) {
 			if (function == Function.LOGISTIC) {
 				output.put(i, 0, 1f / (float) (1 + Math.exp(-output.get(i, 0))));
@@ -183,7 +181,7 @@ public class Layer {
 				output.put(i, 0, output.get(i, 0) > 0 ? output.get(i, 0) : 0f);
 			}
 		}
-		this.revOutputActual = output;
+
 		return output;
 	}
 }

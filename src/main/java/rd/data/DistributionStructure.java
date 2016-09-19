@@ -28,6 +28,11 @@ public class DistributionStructure<V, K> {
 	private final int[][] count;
 	private final int maxRow, maxCol;
 
+	/**
+	 * 
+	 * @param _maxRow - maximum number of rows
+	 * @param _maxCol - maximum number of cols
+	 */
 	public DistributionStructure(int _maxRow, int _maxCol) {
 		count = new int[_maxRow][_maxCol];
 		maxRow = _maxRow;

@@ -30,6 +30,12 @@ public class TimedDistributionStructure<V, K> {
 	private final int maxRow, maxCol, timesteps;
 	private int currentTimeslice = 0;
 
+	/**
+	 * 
+	 * @param _maxRow - maximum number of rows
+	 * @param _maxCol - maximum number of columns
+	 * @param _timesteps - maximum number of time steps
+	 */
 	public TimedDistributionStructure(int _maxRow, int _maxCol, int _timesteps) {
 		count = new int[_maxRow][_maxCol][_timesteps];
 		maxRow = _maxRow;
@@ -37,6 +43,11 @@ public class TimedDistributionStructure<V, K> {
 		timesteps = _timesteps;
 	}
 
+	/**
+	 * Move to next time slice - return the next time slice
+	 * 
+	 * @return
+	 */
 	public synchronized int nextTimeslice() {
 		if (currentTimeslice < timesteps) {
 			return ++currentTimeslice;
@@ -46,12 +57,33 @@ public class TimedDistributionStructure<V, K> {
 		}
 	}
 
+	/**
+	 * Get the current time slice we are adding to
+	 * 
+	 * @return
+	 */
 	public synchronized int getCurrentTimeslice() {
 
 		return currentTimeslice;
 
 	}
 
+	/**
+	 * Add count for Row/Col - Row and Column should be maintained the same for
+	 * example - to get P(X,Y) we set row as X (for all instances: x) and col as
+	 * Y (for all instances: y) as we keep seeing different combinations of x,y
+	 * we keep counting them. This really works with finite 'factorial' or
+	 * countable values of X and Y; because we would come up against Heap Size
+	 * restrictions for massive number of possible x,y combinations.
+	 * 
+	 * Make sure once you have used (for example) X as row Key and Y as col Key
+	 * - then keep that assignment if you switch in the middle you will corrupt
+	 * the counts.
+	 * 
+	 * @param rowKey
+	 * @param colKey
+	 * @throws Exception
+	 */
 	public void add(V rowKey, K colKey) throws Exception {
 		Integer rowI = rowIndex.get(rowKey);
 		if (rowI == null) {
@@ -76,14 +108,29 @@ public class TimedDistributionStructure<V, K> {
 
 	}
 
+	/**
+	 * Get maximum allowed time slices
+	 * 
+	 * @return
+	 */
 	public int maxTimeslice() {
 		return timesteps;
 	}
 
+	/**
+	 * Get Current Row Count
+	 * 
+	 * @return
+	 */
 	public Integer getCurrentRowCount() {
 		return currRow.get();
 	}
 
+	/**
+	 * Get Current Column Count
+	 * 
+	 * @return
+	 */
 	public Integer getCurrentColumnCount() {
 		return currCol.get();
 	}
@@ -110,11 +157,19 @@ public class TimedDistributionStructure<V, K> {
 
 	}
 
+	/**
+	 * Write CSV Data to File
+	 * 
+	 * @param file
+	 *            - file to be written to
+	 * @param timeslice
+	 *            - the time slice to write
+	 */
 	public void writeToFile(File file, int timeslice) {
 
 		try (PrintWriter pw = new PrintWriter(file)) {
 			print(pw, timeslice);
-			logger.info("Written timeslice to file: "+timeslice+ "  file: "+file);
+			logger.info("Written timeslice to file: " + timeslice + "  file: " + file);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 
@@ -150,6 +205,13 @@ public class TimedDistributionStructure<V, K> {
 		return sb.toString();
 	}
 
+	/**
+	 * Print to a print writer
+	 * 
+	 * @param w
+	 * @param timeslice
+	 *            - time slice to print
+	 */
 	public void print(PrintWriter w, int timeslice) {
 		float sum = totalCount.get();
 		if (sum <= 0) {

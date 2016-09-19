@@ -2,7 +2,11 @@ package rd.neuron.deep.training;
 
 import rd.neuron.deep.NeuralElement;
 import rd.neuron.deep.NeuralElement.Direction;
-
+/**
+ * Implementation of Contrastive Divergence using simple arrays
+ * @author azahar
+ *
+ */
 public class ContrastiveDivergence {
 
 	public static NeuralElement train(int[][] inputs, int iter, float learningRate, NeuralElement l) {

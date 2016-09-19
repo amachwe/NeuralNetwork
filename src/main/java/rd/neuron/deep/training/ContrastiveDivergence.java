@@ -8,36 +8,43 @@ public class ContrastiveDivergence {
 	public static NeuralElement train(int[][] inputs, int iter, float learningRate, NeuralElement l) {
 
 		int batchSize = inputs.length;
-		int[] resOut = new int[l.getHiddenNeuronCount()];
-		int[] resIn = new int[l.getVisibleNeuronCount()];
+		int[] hk = new int[l.getHiddenNeuronCount()],hk0=hk;
+		int[] vk = new int[l.getVisibleNeuronCount()];
 
 		double[] pHM = null;
-		double[] cHM = null;
+		double[] hm = null;
 
 		if (iter <= 0) {
 			iter = 1;
 		}
+
 		for (int ex = 0; ex < inputs.length; ex++) {
 			int[] x0 = inputs[ex];
-			resOut = l.postProcess(pHM = l.process(x0, Direction.Forward));
+			hk0 = l.postProcess(pHM = l.process(x0, Direction.Forward));
 			for (int i = 0; i < iter; i++) {
 
-				resIn = l.postProcess(l.process(resOut, Direction.Backward));
-				resOut = l.postProcess(cHM = l.process(resIn, Direction.Forward));
-				updateWeights(learningRate, batchSize, l, pHM, cHM, x0, resIn);
-				updateHiddenBias(learningRate, batchSize, l, pHM, cHM);
-				updateVisibleBias(learningRate, batchSize, l, x0, resIn);
+				if (i == 0) {
+					vk = l.postProcess(l.process(hk0, Direction.Backward));
+					hk = l.postProcess(hm = l.process(vk, Direction.Forward));
+				} else {
+					vk = l.postProcess(l.process(hk, Direction.Backward));
+					hk = l.postProcess(hm = l.process(vk, Direction.Forward));
+				}
+
 			}
+			updateWeights(learningRate, batchSize, l, pHM, hm, x0, vk);
+			updateHiddenBias(learningRate, batchSize, l, hk0, hm);
+			updateVisibleBias(learningRate, batchSize, l, x0, vk);
 		}
 
 		return l;
 
 	}
 
-	private static void updateHiddenBias(float learningRate, int batchSize, NeuralElement l, double initialHiddenMean[],
+	private static void updateHiddenBias(float learningRate, int batchSize, NeuralElement l, int initialHiddenSample[],
 			double currentHiddenMean[]) {
-		for (int i = 0; i < initialHiddenMean.length; i++) {
-			l.updateHiddenBias(i, (initialHiddenMean[i] - currentHiddenMean[i]) * learningRate / batchSize);
+		for (int i = 0; i < initialHiddenSample.length; i++) {
+			l.updateHiddenBias(i, (initialHiddenSample[i] - currentHiddenMean[i]) * learningRate / batchSize);
 		}
 	}
 

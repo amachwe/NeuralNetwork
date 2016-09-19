@@ -12,7 +12,7 @@ import org.junit.Test;
 import rd.data.TimedDistributionStructure;
 import rd.deep.learning.RBM;
 
-public class TestRBM {
+public class TestRBM_Reduced {
 
 	private final Random rand = new Random(123);
 
@@ -20,7 +20,7 @@ public class TestRBM {
 	private final int trainNEach = 200, testNEach = 2;
 
 	// Number of visible units per pattern
-	private final int nVisibleEach = 4;
+	private final int nVisibleEach = 2;
 
 	private final float pNoiseTrain = 0.05f, pNoiseTest = 0.025f;
 
@@ -110,20 +110,24 @@ public class TestRBM {
 
 		// construct RBM
 		RBM nn = new RBM(trainN, nVisible, nHidden, null, null, null, rand);
-		TimedDistributionStructure<String,String> tds = new TimedDistributionStructure<String, String>(100, 5000, 100);
+		TimedDistributionStructure<String,String> tds = new TimedDistributionStructure<String, String>(100, 100, 100);
 		nn.setDistHV(tds);
+
 		// train with contrastive divergence
 		for (int epoch = 0; epoch < epochs; epoch++) {
+
 			for (int batch = 0; batch < miniBatchN; batch++) {
 				for (int item = 0; item < trainMiniBatch[batch].length; item++) {
+
 					nn.contrastive_divergence(trainMiniBatch[batch][item], learningRate, 10);
+
 				}
 			}
 			if (epoch % 100 == 0) {
 				int currentTimeslice = tds.getCurrentTimeslice();
 				System.out.println(currentTimeslice);
-				
-				if (currentTimeslice < tds.maxTimeslice()-1) {
+
+				if (currentTimeslice < tds.maxTimeslice() - 1) {
 					tds.nextTimeslice();
 				}
 			}
@@ -134,11 +138,11 @@ public class TestRBM {
 		for (int i = 0; i < testN; i++) {
 			nn.reconstruct(testX[i], reconstrX[i]);
 		}
-		//nn.getDistVToH().writeToFile(new File("distr_v2h_matrx.csv"),true);
-		//nn.getDistHToV().writeToFile(new File("distr_h2v_matrx.csv"),true);
-		tds.writeToFile(new File("distr_hv_s.csv"),1);
-		tds.writeToFile(new File("distr_hv_e.csv"),tds.getCurrentTimeslice());
+	
 		
+		tds.writeToFile(new File("distr_hv_rs.csv"), 1);
+		tds.writeToFile(new File("distr_hv_re.csv"),tds.getCurrentTimeslice());
+
 		// evaluation
 		System.out.println("-----------------------------------");
 		System.out.println("RBM model reconstruction evaluation");
@@ -169,6 +173,5 @@ public class TestRBM {
 		}
 
 	}
-
 
 }

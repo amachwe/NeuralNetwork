@@ -36,7 +36,7 @@ public class TestRBM {
 	private final int nVisible = nVisibleEach * patterns;
 
 	// Number of hidden units
-	private final int nHidden = 8;
+	private final int nHidden = 6;
 
 	// Data for training, testing and output (for comparing)
 	private final int[][] trainX = new int[trainN][nVisible], testX = new int[testN][nVisible];
@@ -115,9 +115,12 @@ public class TestRBM {
 				rand);
 
 		for (int epoch = 0; epoch < epochs; epoch++) {
+			if (epoch % 100 == 0) {
+				System.out.println(epoch);
+			}
 			for (int batch = 0; batch < miniBatchN; batch++) {
 				// train with contrastive divergence
-				model = ContrastiveDivergence.train(trainMiniBatch[batch], 100, learningRate, model);
+				model = ContrastiveDivergence.train(trainMiniBatch[batch], 10, learningRate, model);
 			}
 			learningRate *= 0.995;
 		}
@@ -144,18 +147,18 @@ public class TestRBM {
 				int delta = 0;
 				for (int i = 0; i < nVisible - 1; i++) {
 					int val = reconstrX[n_][i] >= 0.5f ? 1 : 0;
-					delta+=Math.abs(val-testX[n_][i]);
+					delta += Math.abs(val - testX[n_][i]);
 					// System.out.printf("%.5f, ", reconstrX[n_][i]);
-					System.out.print((val)+", ");
+					System.out.print((val) + ", ");
 				}
 				int val = reconstrX[n_][nVisible - 1] >= 0.5 ? 1 : 0;
 				// System.out.printf("%.5f]\n", reconstrX[n_][nVisible - 1]);
-				delta+=Math.abs(val-testX[n_][nVisible-1]);
-				System.out.print((val)+"]");
+				delta += Math.abs(val - testX[n_][nVisible - 1]);
+				System.out.print((val) + "]");
 				System.out.println();
-				System.out.println(">>>"+((nVisible-delta)*100f/(float)nVisible));
+				System.out.println(">>>" + ((nVisible - delta) * 100f / (float) nVisible));
 			}
-			
+
 			System.out.println();
 		}
 

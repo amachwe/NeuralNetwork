@@ -1,18 +1,18 @@
-package rd.deep.learning.test;
+package rd.neuron.deep.test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.data.TimedDistributionStructure;
 import rd.deep.learning.RBM;
+import rd.neuron.neuron.StochasticLayer;
 
-public class TestRBM {
+public class TestRBM_JBLAS {
 
 	private final Random rand = new Random(123);
 
@@ -38,7 +38,7 @@ public class TestRBM {
 
 	// Data for training, testing and output (for comparing)
 	private final int[][] trainX = new int[trainN][nVisible], testX = new int[testN][nVisible];
-	private final double[][] reconstrX = new double[testN][nVisible];
+	private final FloatMatrix[] reconstrX = new FloatMatrix[testN];
 
 	private final int epochs = 10000;
 	private float learningRate = 0.2f;
@@ -108,37 +108,38 @@ public class TestRBM {
 		// Build Restricted Boltzmann Machine Model
 		//
 
+		FloatMatrix wts = FloatMatrix.zeros(nVisible, nHidden);
+		FloatMatrix bias = FloatMatrix.zeros(nHidden);
+		FloatMatrix inBias = FloatMatrix.zeros(nVisible);
 		// construct RBM
-		RBM nn = new RBM(trainN, nVisible, nHidden, null, null, null, rand);
-		TimedDistributionStructure<String,String> tds = new TimedDistributionStructure<String, String>(100, 5000, 100);
-		nn.setDistHV(tds);
-		// train with contrastive divergence
+		StochasticLayer layer = new StochasticLayer(wts, bias, inBias, rand);
+
 		for (int epoch = 0; epoch < epochs; epoch++) {
 			for (int batch = 0; batch < miniBatchN; batch++) {
 				for (int item = 0; item < trainMiniBatch[batch].length; item++) {
-					nn.contrastive_divergence(trainMiniBatch[batch][item], learningRate, 10);
-				}
-			}
-			if (epoch % 100 == 0) {
-				int currentTimeslice = tds.getCurrentTimeslice();
-				System.out.println(currentTimeslice);
-				
-				if (currentTimeslice < tds.maxTimeslice()-1) {
-					tds.nextTimeslice();
+
+					// train with contrastive divergence
+
+					FloatMatrix input = new FloatMatrix(nVisible, 1);
+					for (int i = 0; i < nVisible; i++) {
+						input.put(i, 0, trainMiniBatch[batch][item][i]);
+					}
+					layer.train(input, input.columns, 10, learningRate);
 				}
 			}
 			learningRate *= 0.995;
 		}
-
 		// test (reconstruct noised data)
 		for (int i = 0; i < testN; i++) {
-			nn.reconstruct(testX[i], reconstrX[i]);
+			FloatMatrix input = new FloatMatrix(nVisible, 1);
+			for (int j = 0; j < nVisible; j++) {
+				input.put(j, 0, testX[i][j]);
+			}
+			//StochasticLayer.p("I", input);
+			//StochasticLayer.p("W", wts);
+			reconstrX[i] = layer.oi(layer.stochasticLayer(layer.io(input)));
 		}
-		//nn.getDistVToH().writeToFile(new File("distr_v2h_matrx.csv"),true);
-		//nn.getDistHToV().writeToFile(new File("distr_h2v_matrx.csv"),true);
-		tds.writeToFile(new File("distr_hv_s.csv"),1);
-		tds.writeToFile(new File("distr_hv_e.csv"),tds.getCurrentTimeslice());
-		
+
 		// evaluation
 		System.out.println("-----------------------------------");
 		System.out.println("RBM model reconstruction evaluation");
@@ -147,28 +148,32 @@ public class TestRBM {
 		for (int pattern = 0; pattern < patterns; pattern++) {
 
 			System.out.printf("Class%d\n", pattern + 1);
-			int delta = 0;
+
 			for (int n = 0; n < testNEach; n++) {
 
 				int n_ = pattern * testNEach + n;
 
 				System.out.print(Arrays.toString(testX[n_]) + " -> ");
 				System.out.print("[");
+				int delta = 0;
+				//System.out.println(reconstrX[n_]);
 				for (int i = 0; i < nVisible - 1; i++) {
-					int val = reconstrX[n_][i] >= 0.5f ? 1 : 0;
+
+					int val = reconstrX[n_].get(i, 0) >= 0.5f ? 1 : 0;
 					delta += Math.abs(val - testX[n_][i]);
-					System.out.printf("%.5f, ", reconstrX[n_][i]);
+					// System.out.printf("%.5f, ", reconstrX[n_][i]);
+					System.out.print((val) + ", ");
 				}
-				int val = reconstrX[n_][nVisible - 1] >= 0.5f ? 1 : 0;
+				int val = reconstrX[n_].get(nVisible - 1, 0) >= 0.5 ? 1 : 0;
+				// System.out.printf("%.5f]\n", reconstrX[n_][nVisible - 1]);
 				delta += Math.abs(val - testX[n_][nVisible - 1]);
-				System.out.printf("%.5f]\n", reconstrX[n_][nVisible - 1]);
-				System.out.println("Delta: " + (Math.abs(delta - nVisible) * 100f / nVisible));
+				System.out.print((val) + "]");
+				System.out.println();
+				System.out.println(">>>" + ((nVisible - delta) * 100f / (float) nVisible));
 			}
 
 			System.out.println();
 		}
 
 	}
-
-
 }

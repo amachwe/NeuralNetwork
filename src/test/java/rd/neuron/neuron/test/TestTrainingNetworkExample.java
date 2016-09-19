@@ -59,6 +59,7 @@ public class TestTrainingNetworkExample {
 				TrainNetwork.train(network, item, input.getOutput(item), 0.5f);
 
 				if (i == 0) {
+					
 					assertTrue(network.getWeight(1, 0, 0) == 0.3589165f);
 					assertTrue(network.getWeight(1, 1, 1) == 0.56137013f);
 					assertTrue(network.getWeight(1, 0, 1) == 0.40866616f);

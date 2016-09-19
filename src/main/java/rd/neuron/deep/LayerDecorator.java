@@ -1,7 +1,5 @@
 package rd.neuron.deep;
 
-import java.util.Arrays;
-
 public abstract class LayerDecorator implements NeuralElement {
 
 	protected final NeuralElement l;

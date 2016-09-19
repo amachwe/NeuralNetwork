@@ -45,7 +45,7 @@ public class TestMNISTData {
 	 * Model constants
 	 */
 	private final int EPOCHS = 1000000;
-	//How many times to repeat the run
+	//How many times to repeat the train-evaluate cycle
 	private final int REPEATS = 1;
 	// Use Stochastic Descent or not
 	private final boolean useSGD = false;

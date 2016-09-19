@@ -15,7 +15,7 @@ public final class Softmax {
 	 */
 	public static void main(String...args)
 	{
-		double[] score = {3,2,1};
+		double[] score = {1,2,4,3,0};
 		double[] prob = softmax(score);
 		printA(prob);
 		validate(prob);
@@ -51,7 +51,7 @@ public final class Softmax {
 	
 	/**
 	 * Softmax function
-	 * @param input - to be convereted to probabilities
+	 * @param input - to be converted to probabilities
 	 * @return
 	 */
 	public static double[] softmax(double[] input) {

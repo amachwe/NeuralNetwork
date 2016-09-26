@@ -8,8 +8,8 @@ package rd.neuron.neuron.test;
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-import rd.neuron.neuron.Layer;
 import rd.neuron.neuron.Layer.Function;
+import rd.neuron.neuron.LayerIf;
 import rd.neuron.neuron.UnitLayerBuilder;
 
 /**
@@ -37,8 +37,8 @@ public class TestRandomLayer {
 		input4.put(0, 0, 0);
 		input4.put(1, 0, 1);
 		input4.put(2, 0, 0);
-		Layer l1 = new UnitLayerBuilder().build(3, 2, Function.ReLU);
-		Layer l2 = new UnitLayerBuilder().build(2, 1, Function.ReLU);
+		LayerIf l1 = new UnitLayerBuilder().build(3, 2, Function.ReLU);
+		LayerIf l2 = new UnitLayerBuilder().build(2, 1, Function.ReLU);
 
 		/*
 		 * ->o 

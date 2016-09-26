@@ -35,7 +35,7 @@ public class TestStochasticLayer {
 		output.put(0, 0,1f).put(0, 1,1f).put(0, 2,1f);
 		System.out.println(sl.oi(output));
 		
-		sl.contrastiveDivergence(input,10, 0.02f);
+		sl.train(input,10, 0.02f);
 
 	}
 }

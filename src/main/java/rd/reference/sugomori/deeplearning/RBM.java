@@ -22,6 +22,10 @@ public class RBM {
 	private TimedDistributionStructure<String, String> distHV = null; 
 	
 
+	/**
+	 * Set the Timed Distribution Structure
+	 * @param tds
+	 */
 	public void setDistHV(TimedDistributionStructure<String, String> tds) {
 		distHV = tds;
 	}

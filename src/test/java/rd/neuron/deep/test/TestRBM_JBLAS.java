@@ -1,5 +1,6 @@
 package rd.neuron.deep.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,16 +10,21 @@ import java.util.Random;
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
-
+import rd.data.TimedDistributionStructure;
 import rd.neuron.neuron.StochasticLayer;
+
 /**
- * JBLAS Matrix Library based RBM Test - pattern test is as described in Deep Learning Essentials by Sugomori
+ * JBLAS Matrix Library based RBM Test - pattern test is as described in Deep
+ * Learning Essentials by Sugomori
+ * 
  * @author azahar
  *
  */
 public class TestRBM_JBLAS {
 
-	private final Random rand = new Random(123);
+	private final TimedDistributionStructure<String, String> tds = new TimedDistributionStructure<>(65,5000, 100);
+
+	private final Random rand = new Random();
 
 	// Training and Testing instances per pattern
 	private final int trainNEach = 200, testNEach = 2;
@@ -49,6 +55,8 @@ public class TestRBM_JBLAS {
 
 	// Mini-batch size and number of instances of mini-batches
 	private final int miniBatchSize = 10, miniBatchN = trainN / miniBatchSize;
+
+	private int iterCount = 0;
 
 	@Test
 	public void doTest() {
@@ -117,6 +125,7 @@ public class TestRBM_JBLAS {
 		FloatMatrix inBias = FloatMatrix.zeros(nVisible);
 		// construct RBM
 		StochasticLayer layer = new StochasticLayer(wts, bias, inBias, rand);
+		layer.setDistHV(tds);
 
 		for (int epoch = 0; epoch < epochs; epoch++) {
 			for (int batch = 0; batch < miniBatchN; batch++) {
@@ -128,10 +137,21 @@ public class TestRBM_JBLAS {
 					for (int i = 0; i < nVisible; i++) {
 						input.put(i, 0, trainMiniBatch[batch][item][i]);
 					}
-					layer.contrastiveDivergence(input,  10, learningRate);
+					layer.train(input, 10, learningRate);
 				}
 			}
 			learningRate *= 0.995;
+			if (epoch % 100 == 0) {
+				if (tds != null && epoch!=0) {
+					System.out.println("Timeslice: "+tds.nextTimeslice());
+				}
+
+				System.out.println(++iterCount);
+			}
+		}
+		if (tds != null) {
+			tds.writeToFile(new File("d_hv_s.csv"), 0);
+			tds.writeToFile(new File("d_hv_e.csv"), tds.getCurrentTimeslice());
 		}
 		// test (reconstruct noised data)
 		for (int i = 0; i < testN; i++) {
@@ -139,8 +159,7 @@ public class TestRBM_JBLAS {
 			for (int j = 0; j < nVisible; j++) {
 				input.put(j, 0, testX[i][j]);
 			}
-			//StochasticLayer.p("I", input);
-			//StochasticLayer.p("W", wts);
+
 			reconstrX[i] = layer.oi(layer.stochasticLayer(layer.io(input)));
 		}
 
@@ -160,16 +179,16 @@ public class TestRBM_JBLAS {
 				System.out.print(Arrays.toString(testX[n_]) + " -> ");
 				System.out.print("[");
 				int delta = 0;
-				//System.out.println(reconstrX[n_]);
+
 				for (int i = 0; i < nVisible - 1; i++) {
 
 					int val = reconstrX[n_].get(i, 0) >= 0.5f ? 1 : 0;
 					delta += Math.abs(val - testX[n_][i]);
-					// System.out.printf("%.5f, ", reconstrX[n_][i]);
+
 					System.out.print((val) + ", ");
 				}
 				int val = reconstrX[n_].get(nVisible - 1, 0) >= 0.5 ? 1 : 0;
-				// System.out.printf("%.5f]\n", reconstrX[n_][nVisible - 1]);
+
 				delta += Math.abs(val - testX[n_][nVisible - 1]);
 				System.out.print((val) + "]");
 				System.out.println();
@@ -180,7 +199,7 @@ public class TestRBM_JBLAS {
 		}
 
 	}
-	
+
 	public static int binomial(int n, double p, Random rng) {
 		if (p < 0 || p > 1)
 			return 0;

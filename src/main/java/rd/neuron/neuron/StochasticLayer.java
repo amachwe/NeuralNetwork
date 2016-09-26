@@ -4,11 +4,14 @@ import java.util.Random;
 
 import org.jblas.FloatMatrix;
 
+import rd.data.TimedDistributionStructure;
+
 /**
  * Stochastic Layer that add support for Binomial Trial based output Also
  * provided the per layer contrastive divergence training method
  * 
  * Based on JBLAS Float Matrix
+ * 
  * @author azahar
  *
  */
@@ -33,6 +36,16 @@ public class StochasticLayer extends Layer {
 		this.rnd = rnd;
 	}
 
+	@Override
+	public FloatMatrix io(FloatMatrix input) {
+		return stochasticLayer(super.io(input));
+	}
+
+	@Override
+	public FloatMatrix oi(FloatMatrix input) {
+		return stochasticLayer(super.oi(input));
+	}
+
 	/**
 	 * Generate stochastic output - input is a vector of activaiton values
 	 * between 0 and 1 (e.g. output of sigmoid)
@@ -53,6 +66,17 @@ public class StochasticLayer extends Layer {
 		return output;
 	}
 
+	private TimedDistributionStructure<String, String> distHV = null;
+
+	/**
+	 * set the Distribution Structure
+	 * 
+	 * @param tds
+	 */
+	public void setDistHV(TimedDistributionStructure<String, String> tds) {
+		distHV = tds;
+	}
+
 	/**
 	 * Contrastive Divergence Learning Method
 	 * 
@@ -62,8 +86,10 @@ public class StochasticLayer extends Layer {
 	 *            - number of CD iterations (between 1 and 10)
 	 * @param learningRate
 	 *            - learning Rate
+	 * 
 	 */
-	public void contrastiveDivergence(FloatMatrix input, int iter, float learningRate) {
+	@Override
+	public void train(FloatMatrix input, int iter, float learningRate) {
 
 		if (iter <= 0) {
 			iter = 1;
@@ -72,7 +98,7 @@ public class StochasticLayer extends Layer {
 		FloatMatrix vk = null, hk = null, hk0 = null, hm = null, hm0 = null;
 
 		hk0 = stochasticLayer(hm0 = io(input));
-
+		addDist(hk0, input);
 		for (int i = 0; i < iter; i++) {
 
 			if (i == 0) {
@@ -80,13 +106,17 @@ public class StochasticLayer extends Layer {
 				vk = stochasticLayer(oi(hk0));
 
 				hk = stochasticLayer(hm = io(vk));
+
 			} else {
 				vk = stochasticLayer(oi(hk));
 
 				hk = stochasticLayer(hm = io(vk));
+
 			}
 
 		}
+		addDist(hk, vk);
+
 		updateWeights(learningRate, hm0, hm, input, vk);
 		updateHiddenBias(learningRate, hk0, hm);
 		updateVisibleBias(learningRate, input, vk);
@@ -149,4 +179,22 @@ public class StochasticLayer extends Layer {
 		System.out.println(v);
 	}
 
+	/**
+	 * Add to distribution structure if present
+	 * 
+	 * @param hiddenKey
+	 *            - hidden layer output
+	 * @param visibleKey
+	 *            - visible layer output
+	 */
+	private final void addDist(FloatMatrix hiddenKey, FloatMatrix visibleKey) {
+		if (distHV != null) {
+			try {
+				distHV.add(hiddenKey.elementsAsList().toString().replace(",", ""),
+						visibleKey.elementsAsList().toString().replace(",", ""));
+			} catch (Exception e) {
+				e.printStackTrace(System.err);
+			}
+		}
+	}
 }

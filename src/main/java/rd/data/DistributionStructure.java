@@ -27,16 +27,37 @@ public class DistributionStructure<V, K> {
 	private final AtomicInteger totalCount = new AtomicInteger(0);
 	private final int[][] count;
 	private final int maxRow, maxCol;
+	private String rowLabel, colLabel;
 
 	/**
 	 * 
-	 * @param _maxRow - maximum number of rows
-	 * @param _maxCol - maximum number of cols
+	 * @param _maxRow
+	 *            - maximum number of rows
+	 * @param _maxCol
+	 *            - maximum number of cols
 	 */
 	public DistributionStructure(int _maxRow, int _maxCol) {
 		count = new int[_maxRow][_maxCol];
 		maxRow = _maxRow;
 		maxCol = _maxCol;
+	}
+
+	/**
+	 * Set row and column labels
+	 * @param rowLabel
+	 * @param colLabel
+	 */
+	public void addLabels(String rowLabel, String colLabel) {
+		this.rowLabel = rowLabel;
+		this.colLabel = colLabel;
+	}
+
+	public String getRowLabel() {
+		return this.rowLabel;
+	}
+
+	public String getColumnLabel() {
+		return this.colLabel;
 	}
 
 	public void add(V rowKey, K colKey) throws Exception {
@@ -136,7 +157,7 @@ public class DistributionStructure<V, K> {
 		for (K colKey : colIndex.keySet()) {
 			w.print(",");
 			w.print(colKey);
-			
+
 		}
 		w.println();
 
@@ -144,11 +165,11 @@ public class DistributionStructure<V, K> {
 
 			Integer rowI = rowIndex.get(rowKey);
 			w.print(rowKey);
-			
+
 			for (int i = 0; i < currCol.get(); i++) {
-				
-					w.print(",");
-			
+
+				w.print(",");
+
 				if (normalise) {
 					w.print(count[rowI][i] / sum);
 				} else {

@@ -46,7 +46,7 @@ public class SimpleNetworkPerformanceEvaluator {
 	
 		
 		int layerCount = 0;
-		for (Layer l : sn) {
+		for (LayerIf l : sn) {
 			int weightCount = 0;
 			int neuronCount = 0;
 			for (Float weight : l.getWeights().elementsAsList()) {
@@ -90,7 +90,7 @@ public class SimpleNetworkPerformanceEvaluator {
 	
 		
 		int layerCount = 0;
-		for (Layer l : sn) {
+		for (LayerIf l : sn) {
 			int weightCount = 0;
 			int neuronCount = 0;
 			for (Float weight : l.getWeights().elementsAsList()) {

@@ -49,7 +49,7 @@ public class TimedDistributionStructure<V, K> {
 	 * @return
 	 */
 	public synchronized int nextTimeslice() {
-		if (currentTimeslice < timesteps) {
+		if (currentTimeslice < timesteps-1) {
 			return ++currentTimeslice;
 		} else {
 			logger.error("Timeslice exceeds capacity.");

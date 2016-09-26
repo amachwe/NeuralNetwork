@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import rd.neuron.neuron.Layer;
 import rd.neuron.neuron.Layer.Function;
+import rd.neuron.neuron.LayerIf;
 
 /**
  * Layer Test
@@ -47,7 +48,7 @@ public class TestLayer {
 		FloatMatrix input4 = new FloatMatrix(2, 1);
 		input4.put(0, 0, 0);
 		input4.put(1, 0, 1);
-		Layer l1 = new Layer(fm1, bias, Function.ReLU);
+		LayerIf l1 = new Layer(fm1, bias, Function.ReLU);
 
 		assertTrue(l1.io(input1).data[0] == 2.5f);
 		assertTrue(l1.io(input1).data[1] == 5.2f);

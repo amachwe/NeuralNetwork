@@ -74,7 +74,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 * @return weight
 	 */
 	public float getWeight(int layer, int neuron, int targetNeuron) {
-		Layer l = network.get(layer);
+		LayerIf l = network.get(layer);
 
 		return l.getWeight(targetNeuron, neuron);
 	}
@@ -99,7 +99,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 *            - new weights matrix
 	 */
 	public void setWeights(int layer, FloatMatrix weightsNew) {
-		Layer l = network.get(layer);
+		LayerIf l = network.get(layer);
 
 		l.setAllWeights(weightsNew);
 	}
@@ -113,7 +113,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 *            - new Bias vector
 	 */
 	public void setBias(int layer, FloatMatrix biasNew) {
-		Layer l = network.get(layer);
+		LayerIf l = network.get(layer);
 
 		l.setAllBias(biasNew);
 	}
@@ -125,7 +125,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 *            - new weights matrix for output layer
 	 */
 	public void setOutputWeights(FloatMatrix weightsNew) {
-		Layer l = network.get(this.numberOfLayers - 1);
+		LayerIf l = network.get(this.numberOfLayers - 1);
 
 		l.setAllWeights(weightsNew);
 	}
@@ -137,7 +137,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 *            - new Bias vector
 	 */
 	public void setOutputBias(FloatMatrix biasNew) {
-		Layer l = network.get(this.numberOfLayers - 1);
+		LayerIf l = network.get(this.numberOfLayers - 1);
 
 		l.setAllBias(biasNew);
 	}
@@ -156,7 +156,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 * @return old weight
 	 */
 	public float adjustWeight(int layer, int neuron, int targetNeuron, float wt) {
-		Layer l = network.get(layer);
+		LayerIf l = network.get(layer);
 		float oldWt = l.getWeight(targetNeuron, neuron);
 		l.setWeight(targetNeuron, neuron, wt);
 		return oldWt;
@@ -173,7 +173,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 * @return
 	 */
 	public float adjustBias(int layer, int neuron, float bias) {
-		Layer l = network.get(layer);
+		LayerIf l = network.get(layer);
 		float oldBias = l.getBias(neuron);
 		l.setBias(neuron, bias);
 
@@ -216,7 +216,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	public FloatMatrix io(FloatMatrix input, int tillLayer) {
 		FloatMatrix temp = null;
 		int layerCount = 0;
-		for (Layer l : network) {
+		for (LayerIf l : network) {
 			if (layerCount == tillLayer && tillLayer > 0) {
 				break;
 			}
@@ -246,7 +246,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 	public FloatMatrix io(FloatMatrix input, int tillLayer, Map<Integer, FloatMatrix> outputs) {
 		FloatMatrix temp = null;
 		int layerCount = 0;
-		for (Layer l : network) {
+		for (LayerIf l : network) {
 			if (layerCount == tillLayer && tillLayer > 0) {
 				break;
 			}
@@ -275,8 +275,8 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 */
 	public FloatMatrix[] trainOutputLayer(float learningRate, FloatMatrix expected, FloatMatrix actuals) {
 		// Get Weights to be trained.
-		Layer output = network.get(this.numberOfLayers - 1);
-		Layer lastHidden = network.get(this.numberOfLayers - 2);
+		LayerIf output = network.get(this.numberOfLayers - 1);
+		LayerIf lastHidden = network.get(this.numberOfLayers - 2);
 
 		FloatMatrix outputActualLastHidden = lastHidden.getActualOutput();
 		FloatMatrix grad = null;
@@ -320,8 +320,8 @@ public class SimpleNetwork implements Iterable<Layer> {
 	public FloatMatrix[] trainHiddenLayer(int layer, float learningRate, FloatMatrix expected, FloatMatrix actuals,
 			FloatMatrix input) {
 		// Get Weights to be trained.
-		Layer output = network.get(layer + 1);
-		Layer lastHidden = network.get(layer);
+		LayerIf output = network.get(layer + 1);
+		LayerIf lastHidden = network.get(layer);
 
 		FloatMatrix outputActualLastHidden = lastHidden.getActualOutput();
 		FloatMatrix grad = null;
@@ -332,7 +332,7 @@ public class SimpleNetwork implements Iterable<Layer> {
 		case LOGISTIC:
 			activeDef = actuals.mul(FloatMatrix.ones(actuals.rows, actuals.columns).sub(actuals));
 			grad = expActuals.mul(activeDef);
-			// System.out.println("Activ Def: "+activeDef+"\nGrad: "+grad);
+			
 			break;
 		case ReLU:
 			grad = expActuals;
@@ -362,14 +362,14 @@ public class SimpleNetwork implements Iterable<Layer> {
 	 * 
 	 * @return
 	 */
-	public Layer getOutputLayer() {
+	public LayerIf getOutputLayer() {
 		return network.get(this.numberOfLayers - 1);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder strNetwork = new StringBuilder();
-		for (Layer l : network) {
+		for (LayerIf l : network) {
 			strNetwork.append(l.toString());
 		}
 

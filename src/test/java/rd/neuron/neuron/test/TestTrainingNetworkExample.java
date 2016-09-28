@@ -56,7 +56,7 @@ public class TestTrainingNetworkExample {
 		for (int i = 0; i < 10000; i++) {
 			for (FloatMatrix item : input) {
 
-				TrainNetwork.train(network, item, input.getOutput(item), 0.5f);
+				TrainNetwork.trainBackprop(network, item, input.getOutput(item), 0.5f);
 
 				if (i == 0) {
 					

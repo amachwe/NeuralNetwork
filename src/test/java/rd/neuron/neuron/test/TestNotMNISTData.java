@@ -72,11 +72,11 @@ public class TestNotMNISTData {
 				}
 				if (useSGD) {
 					FloatMatrix input = streamerTrain.getRandom();
-					TrainNetwork.train(network, input, streamerTrain.getOutput(input), LEARNING_RATE);
+					TrainNetwork.trainBackprop(network, input, streamerTrain.getOutput(input), LEARNING_RATE);
 
 				} else {
 					for (FloatMatrix input : streamerTrain) {
-						TrainNetwork.train(network, input, streamerTrain.getOutput(input), LEARNING_RATE);
+						TrainNetwork.trainBackprop(network, input, streamerTrain.getOutput(input), LEARNING_RATE);
 					}
 
 				}

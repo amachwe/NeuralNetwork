@@ -163,6 +163,7 @@ public class StochasticLayer extends Layer {
 		FloatMatrix fin = visibleSample.mmul(currentHiddenMean.transpose());
 
 		FloatMatrix delta = init.sub(fin);
+
 		weights = weights.add(delta.mul(learningRate));
 
 	}

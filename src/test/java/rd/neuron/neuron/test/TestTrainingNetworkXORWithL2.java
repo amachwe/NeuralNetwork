@@ -26,10 +26,11 @@ import rd.neuron.neuron.TrainNetwork;
  * 
  * @author azahar
  */
-public class TestTrainingNetworkXOR {
+public class TestTrainingNetworkXORWithL2 {
 
-	private int EPOCHS = 100000;
+	private int EPOCHS = 200000;
 	private final float LEARNING_RATE = 0.05f;
+	private final float BETA = 1f;
 
 	@Test
 	public void doLayer() throws IOException {
@@ -51,7 +52,7 @@ public class TestTrainingNetworkXOR {
 		// Back Prop
 		for (int i = 0; i < EPOCHS; i++) {
 			FloatMatrix item = input.getRandom();
-			TrainNetwork.trainBackprop(network, item, input.getOutput(item), LEARNING_RATE);
+			TrainNetwork.trainBackpropWithL2(network, item, input.getOutput(item), LEARNING_RATE,BETA);
 			snpe.evaluateErrorAndNetwork(network, input, LEARNING_RATE);
 		}
 		

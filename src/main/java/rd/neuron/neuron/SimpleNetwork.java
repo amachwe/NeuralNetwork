@@ -302,7 +302,109 @@ public class SimpleNetwork implements Iterable<Layer> {
 		return new FloatMatrix[] { output.getWeights().sub(delta), newBias };
 
 	}
+	
+	private float iterCount = 1;
+	/**
+	 * Train output layer with L2 Normalisation
+	 * 
+	 * @param learningRate
+	 *            - learning rate value (around 0.01 - 0.05)
+	 * @param expected
+	 *            - expected output
+	 * @param actuals
+	 *            - actual output
+	 * @return new weights (index 0) and biases (index 1)
+	 */
+	public FloatMatrix[] trainOutputLayerWithL2(float learningRate, float beta,FloatMatrix expected, FloatMatrix actuals) {
+		// Get Weights to be trained.
+		LayerIf output = network.get(this.numberOfLayers - 1);
+		LayerIf lastHidden = network.get(this.numberOfLayers - 2);
 
+		FloatMatrix outputActualLastHidden = lastHidden.getActualOutput();
+		FloatMatrix grad = null;
+
+		FloatMatrix expActuals = actuals.sub(expected);
+		// System.out.println("-(Expected-Actuals): "+expActuals);
+
+		switch (activationFunction) {
+		case LOGISTIC:
+			FloatMatrix activeDef = actuals.mul(FloatMatrix.ones(actuals.rows, actuals.columns).sub(actuals));
+			grad = expActuals.mul(activeDef).mul(learningRate);
+
+			break;
+		case ReLU:
+			grad = expActuals.mul(learningRate);
+			break;
+		}
+		FloatMatrix delta = outputActualLastHidden.mmul(grad.transpose());
+		FloatMatrix newBias = output.getAllBias().sub(grad);
+		if (dni != null) {
+			dni.inspectWeightChange(this.numberOfLayers - 1, trainCount, delta);
+		}
+
+		FloatMatrix newWts = output.getWeights().sub(delta);
+		return new FloatMatrix[] { newWts.mul(1-(beta/iterCount)), newBias };
+
+	}
+
+	/**
+	 * Train Hidden Layer with L2 Normalisation
+	 * @param layer
+	 *            - train layer
+	 * @param learningRate
+	 *            - learning rate value (around 0.01 - 0.05)
+	 * @param expected
+	 *            - expected output (at output layer)
+	 * @param actuals
+	 *            - actual output (at output layer)
+	 * @param input
+	 *            - input
+	 * @return new weights (index 0) and biases (index 1)
+	 */
+	public FloatMatrix[] trainHiddenLayerWithL2(int layer, float learningRate, float beta, FloatMatrix expected, FloatMatrix actuals,
+			FloatMatrix input) {
+		// Get Weights to be trained.
+		LayerIf output = network.get(layer + 1);
+		LayerIf lastHidden = network.get(layer);
+
+		FloatMatrix outputActualLastHidden = lastHidden.getActualOutput();
+		FloatMatrix grad = null;
+		FloatMatrix activeDef = null;
+		FloatMatrix expActuals = actuals.sub(expected);
+
+		switch (activationFunction) {
+		case LOGISTIC:
+			activeDef = actuals.mul(FloatMatrix.ones(actuals.rows, actuals.columns).sub(actuals));
+			grad = expActuals.mul(activeDef);
+			
+			break;
+		case ReLU:
+			grad = expActuals;
+			break;
+		}
+
+		FloatMatrix alpha = output.getWeights().mmul(grad);
+
+		FloatMatrix delta = alpha.mul(outputActualLastHidden.mul(FloatMatrix
+				.ones(outputActualLastHidden.rows, outputActualLastHidden.columns).sub(outputActualLastHidden)));
+
+		FloatMatrix update = input.mmul(delta.transpose()).mul(learningRate);
+		
+	
+
+		FloatMatrix newWts = lastHidden.getWeights().sub(update);
+		
+		newWts.mul(1-(beta/iterCount++));
+
+		FloatMatrix newBias = lastHidden.getAllBias().sub(grad.mean() * learningRate);
+		if (dni != null) {
+			dni.inspectWeightChange(this.numberOfLayers - 2, trainCount, update);
+		}
+		trainCount++;
+
+		return new FloatMatrix[] { newWts, newBias };
+
+	}
 	/**
 	 * 
 	 * @param layer

@@ -149,6 +149,8 @@ public class TestRBM_JBLAS {
 				System.out.println(++iterCount);
 			}
 		}
+		
+		
 		if (tds != null) {
 			tds.writeToFile(new File("d_hv_s.csv"), 0);
 			tds.writeToFile(new File("d_hv_e.csv"), tds.getCurrentTimeslice());

@@ -3,19 +3,20 @@ package rd.neuron.neuron.test;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jblas.FloatMatrix;
 import org.junit.Test;
 
 import rd.data.DataStreamer;
 import rd.data.DataWriter;
-import rd.data.DeltaInspector;
 import rd.data.MnistToDataStreamer;
 import rd.data.MongoDeltaWriter;
-import rd.neuron.neuron.FullyRandomLayerBuilder;
 import rd.neuron.neuron.Layer.Function;
-import rd.neuron.neuron.SimpleNetwork;
-import rd.neuron.neuron.TrainNetwork;
+import rd.neuron.neuron.LayerIf;
+import rd.neuron.neuron.Propagate;
+import rd.neuron.neuron.RecipeNetworkBuilder;
+import rd.neuron.neuron.StochasticNetwork;
 
 /**
  * MNIST Training Artificial Neural Network: Input -> Single Hidden -> Output
@@ -25,15 +26,11 @@ import rd.neuron.neuron.TrainNetwork;
  * @author azahar
  *
  */
-public class TestMNISTData {
+public class TestRecipeMNISTData {
 
 	// mini-batch size is 1
 
-	// Sample rate to sample the performance data
-	private static final double SAMPLE_RATE = 1e-6;
-	private static final int OUTPUT_LAYER_SIZE = 10;
-	private static final int HIDDEN_LAYER_SIZE = 15;
-	private static final int INPUT_LAYER_SIZE = 784;
+
 	/**
 	 * Files for Labels/Images - Training and Testing - change to run tests
 	 */
@@ -63,13 +60,18 @@ public class TestMNISTData {
 				D_ML_STATS_MNIST_TRAIN_LABELS);
 		System.out.println("Testing Streamer Ready!");
 
-		DataWriter dw = new MongoDeltaWriter("localhost", 27017, "neural", "sgd_backprop");
+		String recipe = "STOCHASTIC 784 1024\nSTOCHASTIC 1024 500\nRANDOM 500 10";
+
+		List<LayerIf> network = RecipeNetworkBuilder.build(recipe);
+		StochasticNetwork nw = new StochasticNetwork(network, Function.LOGISTIC, Function.LOGISTIC);
+
 
 		for (int round = 0; round < REPEATS; round++) {
-			SimpleNetwork network = new SimpleNetwork(new FullyRandomLayerBuilder(0.5f, 1f), Function.LOGISTIC,
-					INPUT_LAYER_SIZE, HIDDEN_LAYER_SIZE, OUTPUT_LAYER_SIZE);
-
-			network.activateDeepNetworkInspection(new DeltaInspector(SAMPLE_RATE, dw));
+			
+			for(FloatMatrix in:streamerTrain)
+			{
+				nw.preTrain(in);
+			}
 
 			// Back Prop
 			for (int i = 0; i < EPOCHS; i++) {
@@ -79,11 +81,12 @@ public class TestMNISTData {
 				}
 				if (useSGD) {
 					FloatMatrix input = streamerTrain.getRandom();
-					TrainNetwork.trainBackpropWithL2(network, input, streamerTrain.getOutput(input), LEARNING_RATE, BETA);
+					
+					nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network), input);
 
 				} else {
 					for (FloatMatrix input : streamerTrain) {
-						TrainNetwork.trainBackpropWithL2(network, input, streamerTrain.getOutput(input), LEARNING_RATE, BETA);
+						nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network), input);
 					}
 
 				}
@@ -95,7 +98,7 @@ public class TestMNISTData {
 			for (FloatMatrix item : streamerTest) {
 				count++;
 
-				FloatMatrix actual = network.io(item);
+				FloatMatrix actual = Propagate.up(item,network);
 				FloatMatrix expected = streamerTest.getOutput(item);
 				float score = score(actual, expected);
 				totalScore += score;
@@ -105,7 +108,7 @@ public class TestMNISTData {
 			System.out.println("Done  " + finalScore);
 		}
 
-		dw.close();
+
 	}
 
 	/**

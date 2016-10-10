@@ -57,7 +57,7 @@ public class TestRecipeBuilder {
 		System.out.println("Pre-training");
 
 		for (FloatMatrix in : train) {
-			nw.preTrain(in);
+			nw.preTrain(in,10,0.02f);
 		}
 
 		// tds.nextTimeslice();

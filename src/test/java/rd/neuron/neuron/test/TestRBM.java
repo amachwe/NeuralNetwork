@@ -1,4 +1,4 @@
-package rd.reference.sugomori.deeplearning.test;
+package rd.neuron.neuron.test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -110,8 +110,8 @@ public class TestRBM {
 
 		// construct RBM
 		RBM nn = new RBM(trainN, nVisible, nHidden, null, null, null, rand);
-		//TimedDistributionStructure<String,String> tds = new TimedDistributionStructure<String, String>(100, 5000, 100);
-		//nn.setDistHV(tds);
+		TimedDistributionStructure<String,String> tds = new TimedDistributionStructure<String, String>(100, 5000, 100);
+		nn.setDistHV(tds);
 		// train with contrastive divergence
 		for (int epoch = 0; epoch < epochs; epoch++) {
 			for (int batch = 0; batch < miniBatchN; batch++) {
@@ -120,12 +120,12 @@ public class TestRBM {
 				}
 			}
 			if (epoch % 100 == 0) {
-				//int currentTimeslice = tds.getCurrentTimeslice();
-				//System.out.println(currentTimeslice);
+				int currentTimeslice = tds.getCurrentTimeslice();
+				System.out.println(currentTimeslice);
 				
-				//if (currentTimeslice < tds.maxTimeslice()-1) {
-					//tds.nextTimeslice();
-				//}
+				if (currentTimeslice < tds.maxTimeslice()-1) {
+					tds.nextTimeslice();
+				}
 			}
 			learningRate *= 0.995;
 		}
@@ -136,8 +136,8 @@ public class TestRBM {
 		}
 		//nn.getDistVToH().writeToFile(new File("distr_v2h_matrx.csv"),true);
 		//nn.getDistHToV().writeToFile(new File("distr_h2v_matrx.csv"),true);
-		//tds.writeToFile(new File("distr_hv_s.csv"),1);
-		//tds.writeToFile(new File("distr_hv_e.csv"),tds.getCurrentTimeslice());
+		tds.writeToFile(new File("distr_hv_s.csv"),1);
+		tds.writeToFile(new File("distr_hv_e.csv"),tds.getCurrentTimeslice());
 		
 		// evaluation
 		System.out.println("-----------------------------------");

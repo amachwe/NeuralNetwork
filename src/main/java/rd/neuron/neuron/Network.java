@@ -1,9 +1,12 @@
 package rd.neuron.neuron;
 
+import java.io.Serializable;
+
 import org.jblas.FloatMatrix;
 
-public interface Network {
+public interface Network extends Serializable {
 
+	
 	/**
 	 * Train output layer
 	 * 

@@ -42,13 +42,12 @@ public class TestRecipeMNISTData {
 	/**
 	 * Model constants
 	 */
-	private final int EPOCHS = 1000000;
+	private final int EPOCHS = 10000;
 	// How many times to repeat the train-evaluate cycle
 	private final int REPEATS = 1;
 	// Use Stochastic Descent or not
 	private final boolean useSGD = true;
-	private final float LEARNING_RATE = 0.05f;
-	private final float BETA = 0f;
+
 
 	@Test
 	public void doMNISTTest() throws IOException {
@@ -60,7 +59,7 @@ public class TestRecipeMNISTData {
 				D_ML_STATS_MNIST_TRAIN_LABELS);
 		System.out.println("Testing Streamer Ready!");
 
-		String recipe = "STOCHASTIC 784 1024\nSTOCHASTIC 1024 500\nRANDOM 500 10";
+		String recipe = "RANDOM 784 300\nRANDOM 300 300\nRANDOM 300 10";
 
 		List<LayerIf> network = RecipeNetworkBuilder.build(recipe);
 		StochasticNetwork nw = new StochasticNetwork(network, Function.LOGISTIC, Function.LOGISTIC);
@@ -70,7 +69,7 @@ public class TestRecipeMNISTData {
 			
 			for(FloatMatrix in:streamerTrain)
 			{
-				nw.preTrain(in);
+				//nw.preTrain(in);
 			}
 
 			// Back Prop

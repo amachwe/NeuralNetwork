@@ -77,30 +77,24 @@ public class StochasticNetwork implements Network {
 
 	}
 
-	public void preTrain(FloatMatrix in) {
-
+	public void preTrain(FloatMatrix in, int steps, float learningRate) {
 
 		for (LayerIf layer : network) {
 
 			if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
-			
 
-				layer.train(in, 10, 0.02f);
-
-				
+				layer.train(in, steps, learningRate);
 
 			} else {
 
 				if (layer.getLayerType() != LayerType.OUTPUT) {
-			
 
 					FloatMatrix _result = null;
 
 					_result = Propagate.up(in, network, layer.getLayerIndex());
 
-					layer.train(_result, 10, 0.02f);
+					layer.train(_result, steps, learningRate);
 
-			
 				}
 
 			}

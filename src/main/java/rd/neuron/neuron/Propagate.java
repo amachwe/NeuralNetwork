@@ -94,24 +94,27 @@ public class Propagate {
 	 */
 	public static final FloatMatrix down(FloatMatrix input, List<LayerIf> network, int minIndex) {
 
-		if (minIndex <= 0) {
-			minIndex = network.size()+1;
-		}
+	
 		FloatMatrix temp = null;
 		for (int i=network.size()-1;i>=0;i--) {
 			LayerIf l = network.get(i);
+			
 			if (l.getLayerIndex() >= minIndex) {
+				
 				if (temp == null) {
+				
 					temp = l.oi(input);
+					
 
 				} else {
+				
 					temp = l.oi(temp);
 				}
 			} else {
 				break;
 			}
 		}
-
+		
 		return temp;
 	}
 

@@ -27,7 +27,7 @@ import rd.neuron.neuron.StochasticNetwork;
 public class TestRBMMNISTRecipe {
 
 	//Filename to save/load the model
-	private static final String fileName = "network2.out.nw";
+	private static final String fileName = "network.out.nw";
 	//Load from file flag - needs to be set and the filename variable needs to point to the right file
 	private static final boolean loadFromFile = true;
 

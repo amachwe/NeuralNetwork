@@ -14,6 +14,10 @@ import rd.data.TimedDistributionStructure;
  */
 public class Layer implements LayerIf {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6181613443702068826L;
 	private static final Logger logger = LoggerFactory.getLogger(Layer.class);
 	protected FloatMatrix weights;
 	protected FloatMatrix bias;

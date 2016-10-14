@@ -17,6 +17,10 @@ import rd.data.TimedDistributionStructure;
  */
 public class StochasticLayer extends Layer {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9040678122670035999L;
 	private final Random rnd;
 
 	/**

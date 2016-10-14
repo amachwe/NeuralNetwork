@@ -112,7 +112,7 @@ public class StochasticNetwork implements Network {
 
 	public void preTrain(List<FloatMatrix> in, int steps, float learningRate) {
 
-		int iterC = 0;
+	
 		for (LayerIf layer : network) {
 			for (FloatMatrix _in : in) {
 				if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
@@ -134,7 +134,7 @@ public class StochasticNetwork implements Network {
 
 				}
 			}
-			iterC++;
+			
 		}
 	}
 
@@ -204,6 +204,11 @@ public class StochasticNetwork implements Network {
 		throw new Error("Method not supported.");
 	}
 
+	/**
+	 * Save network to file
+	 * @param file
+	 * @param network
+	 */
 	public static void save(String file, List<LayerIf> network) {
 		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
 			oos.writeObject(network);
@@ -214,6 +219,12 @@ public class StochasticNetwork implements Network {
 		}
 	}
 
+	/**
+	 * Load Network layers from file
+	 * @param file
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public static List<LayerIf> load(String file) {
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
 			Object obj = ois.readObject();

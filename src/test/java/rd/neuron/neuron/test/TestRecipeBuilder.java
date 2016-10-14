@@ -1,6 +1,7 @@
 package rd.neuron.neuron.test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,11 +11,9 @@ import org.junit.Test;
 import rd.data.TimedDistributionStructure;
 import rd.neuron.neuron.Layer.Function;
 import rd.neuron.neuron.LayerIf;
-import rd.neuron.neuron.LayerIf.LayerType;
 import rd.neuron.neuron.Propagate;
 import rd.neuron.neuron.RecipeNetworkBuilder;
 import rd.neuron.neuron.StochasticNetwork;
-import rd.neuron.neuron.TrainNetwork;
 
 public class TestRecipeBuilder {
 
@@ -56,9 +55,7 @@ public class TestRecipeBuilder {
 
 		System.out.println("Pre-training");
 
-		for (FloatMatrix in : train) {
-			nw.preTrain(in,10,0.02f);
-		}
+		nw.preTrain(train, 10, 0.02f);
 
 		// tds.nextTimeslice();
 		// for (FloatMatrix in : test) {

@@ -1,10 +1,12 @@
 package rd.neuron.neuron;
 
+import java.io.Serializable;
+
 import org.jblas.FloatMatrix;
 
 import rd.data.TimedDistributionStructure;
 
-public interface LayerIf {
+public interface LayerIf  extends Serializable{
 
 	public enum LayerType {
 		FIRST_HIDDEN, HIDDEN, LAST_HIDDEN, OUTPUT

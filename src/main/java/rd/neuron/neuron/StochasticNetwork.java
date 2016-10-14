@@ -1,5 +1,9 @@
 package rd.neuron.neuron;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 import org.jblas.FloatMatrix;
@@ -9,6 +13,10 @@ import rd.neuron.neuron.LayerIf.LayerType;
 
 public class StochasticNetwork implements Network {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7807952804454760098L;
 	private final List<LayerIf> network;
 	private final int numberOfLayers;
 	private final Function outputLayerFn, lastHiddenLayerFn;
@@ -77,27 +85,56 @@ public class StochasticNetwork implements Network {
 
 	}
 
-	public void preTrain(FloatMatrix in, int steps, float learningRate) {
+	public void preTrain(FloatMatrix[] in, int steps, float learningRate) {
 
 		for (LayerIf layer : network) {
+			for (FloatMatrix _in : in) {
+				if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
 
-			if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
+					layer.train(_in, steps, learningRate);
 
-				layer.train(in, steps, learningRate);
+				} else {
 
-			} else {
+					if (layer.getLayerType() != LayerType.OUTPUT) {
 
-				if (layer.getLayerType() != LayerType.OUTPUT) {
+						FloatMatrix _result = null;
 
-					FloatMatrix _result = null;
+						_result = Propagate.up(_in, network, layer.getLayerIndex());
 
-					_result = Propagate.up(in, network, layer.getLayerIndex());
+						layer.train(_result, steps, learningRate);
 
-					layer.train(_result, steps, learningRate);
+					}
 
 				}
-
 			}
+		}
+	}
+
+	public void preTrain(List<FloatMatrix> in, int steps, float learningRate) {
+
+		int iterC = 0;
+		for (LayerIf layer : network) {
+			for (FloatMatrix _in : in) {
+				if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
+
+					layer.train(_in, steps, learningRate);
+
+				} else {
+
+					// if (layer.getLayerType() != LayerType.OUTPUT)
+					{
+
+						FloatMatrix _result = null;
+
+						_result = Propagate.up(_in, network, layer.getLayerIndex());
+
+						layer.train(_result, steps, learningRate);
+
+					}
+
+				}
+			}
+			iterC++;
 		}
 	}
 
@@ -165,5 +202,28 @@ public class StochasticNetwork implements Network {
 			FloatMatrix actuals, FloatMatrix input) {
 
 		throw new Error("Method not supported.");
+	}
+
+	public static void save(String file, List<LayerIf> network) {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+			oos.writeObject(network);
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+		} finally {
+			System.out.println("Written network.");
+		}
+	}
+
+	public static List<LayerIf> load(String file) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
+			Object obj = ois.readObject();
+			if (obj instanceof List) {
+				return (List<LayerIf>) obj;
+			}
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+
+		}
+		return null;
 	}
 }

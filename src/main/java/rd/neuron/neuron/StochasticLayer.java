@@ -38,12 +38,12 @@ public class StochasticLayer extends Layer {
 
 	@Override
 	public FloatMatrix io(FloatMatrix input) {
-		return stochasticLayer(super.io(input));
+		return super.io(input);
 	}
 
 	@Override
 	public FloatMatrix oi(FloatMatrix input) {
-		return stochasticLayer(super.oi(input));
+		return super.oi(input);
 	}
 
 	/**
@@ -56,6 +56,26 @@ public class StochasticLayer extends Layer {
 	 * @return binary output vector of same length as input
 	 */
 	public FloatMatrix stochasticLayer(FloatMatrix input) {
+		FloatMatrix output = new FloatMatrix(input.rows, input.columns);
+
+		for (int i = 0; i < input.columns; i++) {
+			for (int j = 0; j < input.rows; j++) {
+				output.put(j, i, input.get(j, i) > rnd.nextFloat() ? 1f : 0f);
+			}
+		}
+		return output;
+	}
+	
+	/**
+	 * Generate stochastic output - input is a vector of activaiton values
+	 * between 0 and 1 (e.g. output of sigmoid)
+	 * 
+	 * @param input
+	 *            vector of values between 0 and 1 - such as the kind generated
+	 *            by a sigmoid layer
+	 * @return binary output vector of same length as input
+	 */
+	public static FloatMatrix stochasticLayer(FloatMatrix input,Random rnd) {
 		FloatMatrix output = new FloatMatrix(input.rows, input.columns);
 
 		for (int i = 0; i < input.columns; i++) {

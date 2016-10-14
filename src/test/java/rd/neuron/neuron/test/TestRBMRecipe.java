@@ -21,29 +21,43 @@ public class TestRBMRecipe {
 		int epoch = 10000;
 		int noOfUnits = 24;
 		int unitLength = 4;
-		DataStreamer train = pb.getDataSet(unitLength,noOfUnits, 100000, 0.001f);
-		DataStreamer test = pb.getDataSet(unitLength,noOfUnits, 100000, 0.10f);
+		int count = 100000;
+		DataStreamer train = pb.getDataSet(unitLength, noOfUnits, count, 0.001f);
+		DataStreamer test = pb.getDataSet(unitLength, noOfUnits, count, 0.10f);
 
 		String recipe = "STOCHASTIC 96 24";
 
 		List<LayerIf> network = RecipeNetworkBuilder.build(recipe);
 		StochasticNetwork nw = new StochasticNetwork(network, Function.LOGISTIC, Function.LOGISTIC);
 		for (int i = 0; i < epoch; i++) {
-			for (FloatMatrix input : train) {
-				nw.preTrain(input, 10, 0.02f);
+
+			FloatMatrix dataSet[] = new FloatMatrix[(int) (0.1 * count)];
+			int c = 0;
+			while (c < dataSet.length) {
+				for (FloatMatrix in : train) {
+					if (c < dataSet.length) {
+						if (Math.random() < 0.1) {
+							dataSet[c++] = in;
+						}
+					} else {
+						break;
+					}
+				}
 			}
+			nw.preTrain(dataSet, 10, 0.02f);
+
 		}
 		float avg = 0;
-		int count = 0;
+		int _count = 0;
 		for (FloatMatrix input : test) {
 			FloatMatrix h = Propagate.up(input, network);
 
 			FloatMatrix v = Propagate.down(h, network);
 			System.out.println(input + "  " + v);
-			avg+=PatternBuilder.score(v, input);
-			count++;
+			avg += PatternBuilder.score(v, input);
+			_count++;
 		}
-		
-		System.out.println(avg/count);
+
+		System.out.println(avg / _count);
 	}
 }

@@ -81,11 +81,11 @@ public class TestRecipeMNISTData {
 				if (useSGD) {
 					FloatMatrix input = streamerTrain.getRandom();
 					
-					nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network), input);
+					nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network));
 
 				} else {
 					for (FloatMatrix input : streamerTrain) {
-						nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network), input);
+						nw.fineTuneOutputLayer(streamerTrain.getOutput(input), Propagate.up(input, network));
 					}
 
 				}

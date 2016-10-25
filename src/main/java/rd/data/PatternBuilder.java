@@ -65,6 +65,26 @@ public class PatternBuilder {
 		return score / b.length;
 	}
 
+	public static final float matchScore(FloatMatrix a, FloatMatrix b) {
+	
+		float maxA = 0, maxB = 0, tmpA = 0, tmpB = 0;
+		int indexA = 0, indexB = 0;
+		for (int i = 0; i < a.length; i++) {
+			tmpA = a.get(i);
+			tmpB = b.get(i);
+			if (tmpA > maxA) {
+				maxA = tmpA;
+				indexA=i;
+			}
+			if (tmpB > maxB) {
+				maxB = tmpB;
+				indexB=i;
+			}
+		}
+
+		return indexA == indexB ? 1:0;
+	}
+
 	public final float decide(float prob) {
 		if (rnd.nextDouble() < prob) {
 			return 1.0f;

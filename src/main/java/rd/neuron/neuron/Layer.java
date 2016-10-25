@@ -218,10 +218,7 @@ public class Layer implements LayerIf {
 	 */
 	@Override
 	public FloatMatrix oi(FloatMatrix input) {
-		if (inputBias == null) {
-			logger.warn("Error: This layer is not enabled for reverse propagation.");
-			return FloatMatrix.EMPTY;
-		}
+	
 		return revIO(input);
 	}
 
@@ -235,7 +232,7 @@ public class Layer implements LayerIf {
 
 		FloatMatrix output = weights.mmul(input);
 
-		output = output.add(inputBias);
+		//output = output.add(inputBias);
 
 		for (int i = 0; i < output.getRows(); i++) {
 			if (function == Function.LOGISTIC) {

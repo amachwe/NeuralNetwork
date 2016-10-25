@@ -1,5 +1,6 @@
 package rd.neuron.neuron.test;
 
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,17 +24,22 @@ import rd.neuron.neuron.Propagate;
 import rd.neuron.neuron.RecipeNetworkBuilder;
 import rd.neuron.neuron.StochasticLayer;
 import rd.neuron.neuron.StochasticNetwork;
-
+/**
+ * Generative Test
+ * @author azahar
+ *
+ */
 public class TestRBMMNISTRecipe {
 
-	//Filename to save/load the model
-	private static final String fileName = "network.out.nw";
-	//Load from file flag - needs to be set and the filename variable needs to point to the right file
-	private static final boolean loadFromFile = true;
+	// Filename to save/load the model
+	private static final String fileName = "network.large.midepoch.nw";
+	// Load from file flag - needs to be set and the filename variable needs to
+	// point to the right file
+	private static final boolean loadFromFile = false;
 
-	//Random generator
+	// Random generator
 	private static final Random rnd = new Random(123);
-	
+
 	/**
 	 * Files for Labels/Images - Training and Testing - change to run tests
 	 */
@@ -44,13 +50,15 @@ public class TestRBMMNISTRecipe {
 
 	public static void main(String... args) throws FileNotFoundException, IOException {
 
-		//Threaded Image Writer - writer for example images with  4 threads.
+		// Number of output layers
+		int numOutputLayers = 1;
+		// Threaded Image Writer - writer for example images with 4 threads.
 		ThreadedImageWriter tiw = new ThreadedImageWriter(4);
-		
-		//Epochs for CD
-		int epoch = 10000;
 
-		//Load Test and Training data
+		// Epochs for CD
+		int epoch = 5000;
+
+		// Load Test and Training data
 		DataStreamer train = MnistToDataStreamer.createStreamer(D_ML_STATS_MNIST_T10K_IMAGES,
 				D_ML_STATS_MNIST_T10K_LABELS);
 		System.out.println("Training Streamer Ready!");
@@ -59,73 +67,82 @@ public class TestRBMMNISTRecipe {
 				D_ML_STATS_MNIST_TRAIN_LABELS);
 		System.out.println("Testing Streamer Ready!");
 
-		//Our network - consists of a list of layers
-		List<LayerIf> network;
-		
-		//width of hidden units - constant value
+		// Our network - consists of a list of layers - stochastic network is
+		// the part that will be pretrained.
+		List<LayerIf> network, stochasticNetwork;
+
+		// width of hidden units - constant value
 		int width = 10;
-		//Number of hidden units - square of the width variable
+		// Number of hidden units - square of the width variable
 		int lengthHidden = width * width;
-		
-		//Check if we want to load a model from a file or create a new one and save it to the file
+
+		// Check if we want to load a model from a file or create a new one and
+		// save it to the file
 		if (!(new File(fileName)).exists() || !loadFromFile) {
 
-			//Recipe for our network: >> 784 - 100 - 100 - 100 >>
-			String recipe = "STOCHASTIC 784 " + lengthHidden + "\nSTOCHASTIC " + lengthHidden + " 100\nSTOCHASTIC "
-					+ lengthHidden + " " + lengthHidden + "\nSTOCHASTIC " + lengthHidden + " " + lengthHidden;
+			// Recipe for our network: >> 784 - 100 - 100 - 100 >>
+			String recipe = "STOCHASTIC 784 " + lengthHidden + "\nSTOCHASTIC " + lengthHidden + " " + lengthHidden
+					+ "\nSTOCHASTIC " + lengthHidden + " " + lengthHidden + "\nSTOCHASTIC " + lengthHidden + " "
+					+ lengthHidden + "\nRANDOM " + lengthHidden + " 10";
 
 			network = RecipeNetworkBuilder.build(recipe);
-			
+			stochasticNetwork = getStochasticNetwork(network, numOutputLayers);
+
 			StochasticNetwork nw = new StochasticNetwork(network, Function.LOGISTIC, Function.LOGISTIC);
 			List<FloatMatrix> miniBatch = new ArrayList<>();
 			for (int i = 0; i < epoch; i++) {
 				miniBatch.clear();
 				for (FloatMatrix input : train) {
-					//Randomly add elements to the mini batch
+					// Randomly add elements to the mini batch
 					if (Math.random() < 0.001) {
 						miniBatch.add(input);
 					}
 				}
-				
-				//Pre-train CD-10
-				nw.preTrain(miniBatch, 10, 0.02f);
+
+				// Pre-train CD-10
+				StochasticNetwork.preTrain(stochasticNetwork, miniBatch, 10, 0.02f);
 
 				if (epoch % 100 == 0) {
 					System.out.println(i * 100f / epoch);
 				}
 			}
+		
 
-			//Save the trained network
+			// Save the trained network
 			StochasticNetwork.save(fileName, network);
 		} else {
-			//Load the network from filename provided
+			// Load the network from filename provided
 			network = StochasticNetwork.load(fileName);
+			stochasticNetwork = getStochasticNetwork(network, numOutputLayers);
 		}
-		
-		
+
 		float avg = 0;
 		int count = 0;
-		
-		//TEST
-		
-		//Max instances to record in images
+
+		// TEST
+
+		System.out.println("Network size: " + network.size());
+
+		System.out.println("Stochastic Network size: " + stochasticNetwork.size());
+
+		// Max instances to record in images
 		int instancesRemainingToRecord = 20;
-		
-		//Should be equal to number of hidden layers
+
+		// Should be equal to number of hidden layers
 		int recordLen = 4;
-		
+
 		FloatMatrix combinedInstances[][] = new FloatMatrix[instancesRemainingToRecord][recordLen + 2];
 		FloatMatrix[] hiddenLayerRecords = new FloatMatrix[recordLen];
 		for (FloatMatrix input : test) {
 
 			FloatMatrix h = input;
 			int lcount = 0;
-			for (LayerIf l : network) {
+			for (LayerIf l : stochasticNetwork) {
 				h = StochasticLayer.stochasticLayer(Propagate.upOne(h, l), rnd);
 				hiddenLayerRecords[lcount++] = h;
 			}
 
-			FloatMatrix v = StochasticLayer.stochasticLayer(Propagate.down(h, network), rnd);
+			FloatMatrix v = StochasticLayer.stochasticLayer(Propagate.down(h, stochasticNetwork), rnd);
 
 			avg += PatternBuilder.score(v, input, 0.1f);
 			if (Math.random() < 0.01 && instancesRemainingToRecord > 0) {
@@ -139,23 +156,25 @@ public class TestRBMMNISTRecipe {
 			}
 			count++;
 		}
-
-		//Write the combined image of inputs, outputs and hidden layer activations while testing
+		if (instancesRemainingToRecord > 0) {
+			System.out.println("Problem, not all instances are initialised: " + instancesRemainingToRecord);
+		}
+		// Write the combined image of inputs, outputs and hidden layer
+		// activations while testing
 		tiw.writeImage(combinedInstances, 28, 28, "combine.png");
 
-		
-		//Generating with Random Feature inputs
-		
+		// Generating with Random Feature inputs
+
 		int rh = 0, rw = 0;
 
 		int maxH = 20, maxW = 20;
-		
-		//Maximum number of digits to be generated.
+
+		// Maximum number of digits to be generated.
 		int maxDigitsToBeGenerated = maxH * maxW;
-		
-		//Maximum Sample steps
-		int maxSample= 50;
-		
+
+		// Maximum Sample steps
+		int maxSample = 50;
+
 		FloatMatrix[][] randomGen = new FloatMatrix[maxH][maxW];
 		for (int i = 0; i < maxDigitsToBeGenerated; i++) {
 			FloatMatrix randFeatureSet = FloatMatrix.rand(lengthHidden, 1);
@@ -167,17 +186,17 @@ public class TestRBMMNISTRecipe {
 				}
 			}
 
-			//Do up down with hidden clampled to random value
+			// Do up down with hidden clampled to random value
 			FloatMatrix random = randFeatureSet;
-			
-			for (int cc = 0; cc < maxSample; cc++) {
-				random = StochasticLayer.stochasticLayer(Propagate.down(random, network), rnd);
 
-				random = StochasticLayer.stochasticLayer(Propagate.up(random, network), rnd);
+			for (int cc = 0; cc < maxSample; cc++) {
+				random = StochasticLayer.stochasticLayer(Propagate.down(random, stochasticNetwork), rnd);
+
+				random = StochasticLayer.stochasticLayer(Propagate.up(random, stochasticNetwork), rnd);
 
 			}
 
-			random = StochasticLayer.stochasticLayer(Propagate.down(random, network), rnd);
+			random = StochasticLayer.stochasticLayer(Propagate.down(random, stochasticNetwork), rnd);
 
 			randomGen[rw++][rh] = random;
 			if (rh >= maxH) {
@@ -190,18 +209,27 @@ public class TestRBMMNISTRecipe {
 
 		}
 
-		//Write Generated Digits
-		tiw.writeImage(randomGen, 28, 28, "random"+(maxSample+1)+"."+maxDigitsToBeGenerated+".png");
+		// Write Generated Digits
+		tiw.writeImage(randomGen, 28, 28, "random" + (maxSample + 1) + "." + maxDigitsToBeGenerated + ".png");
 
 		System.out.println(avg / count);
 		tiw.shutdown();
 
 	}
 
+	public static List<LayerIf> getStochasticNetwork(List<LayerIf> network, int numOutputLayers) {
+		if (numOutputLayers == 0) {
+			return network;
+		} else {
+			return network.subList(0, network.size() - numOutputLayers);
+		}
+	}
+
 }
 
 /**
  * Threaded Image Writer
+ * 
  * @author azahar
  *
  */
@@ -210,6 +238,7 @@ class ThreadedImageWriter {
 
 	/**
 	 * Number of threads
+	 * 
 	 * @param threads
 	 */
 	public ThreadedImageWriter(int threads) {
@@ -218,7 +247,8 @@ class ThreadedImageWriter {
 
 	/**
 	 * Write image with single float matrix
-	 * @param fm 
+	 * 
+	 * @param fm
 	 * @param width
 	 * @param height
 	 * @param filename
@@ -230,7 +260,9 @@ class ThreadedImageWriter {
 
 	/**
 	 * Write a set of float matrixs into a grouped image
-	 * @param fm - matrix of float matrix
+	 * 
+	 * @param fm
+	 *            - matrix of float matrix
 	 * @param width
 	 * @param height
 	 * @param filename
@@ -248,6 +280,7 @@ class ThreadedImageWriter {
 
 /**
  * Task to write float matrix to image (png)
+ * 
  * @author azahar
  *
  */
@@ -258,10 +291,14 @@ class Task implements Runnable {
 
 	/**
 	 * 
-	 * @param fm - float matrix
-	 * @param width - width of image
-	 * @param height - height of image
-	 * @param filename - filename
+	 * @param fm
+	 *            - float matrix
+	 * @param width
+	 *            - width of image
+	 * @param height
+	 *            - height of image
+	 * @param filename
+	 *            - filename
 	 */
 	public Task(FloatMatrix fm, int width, int height, String filename) {
 		this.fm = new FloatMatrix[][] { { fm } };
@@ -272,10 +309,14 @@ class Task implements Runnable {
 
 	/**
 	 * 
-	 * @param fm - matrix of float matrix to draw grouped image.
-	 * @param width - width of image
-	 * @param height - height of image
-	 * @param filename - filename
+	 * @param fm
+	 *            - matrix of float matrix to draw grouped image.
+	 * @param width
+	 *            - width of image
+	 * @param height
+	 *            - height of image
+	 * @param filename
+	 *            - filename
 	 */
 	public Task(FloatMatrix fm[][], int width, int height, String filename) {
 		this.fm = fm;
@@ -286,33 +327,39 @@ class Task implements Runnable {
 
 	@Override
 	public void run() {
+		Point p = new Point();
+		try {
+			System.out.println("Writing: " + filename);
+			int actualWidth = width * fm[0].length;
+			int actualHeight = height * fm.length;
 
-		System.out.println("Writing: " + filename);
-		int actualWidth = width * fm[0].length;
-		int actualHeight = height * fm.length;
+			BufferedImage bi = new BufferedImage(actualWidth, actualHeight, BufferedImage.TYPE_INT_RGB);
 
-		BufferedImage bi = new BufferedImage(actualWidth, actualHeight, BufferedImage.TYPE_INT_RGB);
-		for (int w = 0; w < fm.length; w++) {
-			for (int h = 0; h < fm[0].length; h++) {
-				int c = 0;
-				int len = (int) Math.sqrt(fm[w][h].length);
-				for (int i = 0; i < width; i++) {
-					for (int j = 0; j < height; j++) {
-						if (c >= fm[w][h].length) {
-							bi.setRGB(j + (h * height), i + (w * width), 0);
-						} else if (j <= len && i <= len) {
-							bi.setRGB(j + (h * height), i + (w * width), (int) (255 * fm[w][h].get(c++)));
+			for (int w = 0; w < fm.length; w++) {
+				for (int h = 0; h < fm[0].length; h++) {
+					int c = 0;
+					p.x = w;
+					p.y = h;
+					int len = (int) Math.sqrt(fm[w][h].length);
+					for (int i = 0; i < width; i++) {
+						for (int j = 0; j < height; j++) {
+							if (c >= fm[w][h].length) {
+								bi.setRGB(j + (h * height), i + (w * width), 0);
+							} else if (j <= len && i <= len) {
+								bi.setRGB(j + (h * height), i + (w * width), (int) (255 * fm[w][h].get(c++)));
+							}
 						}
 					}
 				}
 			}
-		}
 
-		try {
 			ImageIO.write(bi, "png", new File(filename));
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(System.out);
+		} catch (Exception e) {
+			System.out.println("Error in processing data for: " + filename + " coordinate: " + p);
+			e.printStackTrace(System.out);
 		} finally {
 			System.out.println("End: " + filename);
 		}

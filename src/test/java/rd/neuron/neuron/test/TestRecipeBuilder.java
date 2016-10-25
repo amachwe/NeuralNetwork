@@ -1,7 +1,6 @@
 package rd.neuron.neuron.test;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,7 +54,7 @@ public class TestRecipeBuilder {
 
 		System.out.println("Pre-training");
 
-		nw.preTrain(train, 10, 0.02f);
+		StochasticNetwork.preTrain(network,train, 10, 0.02f);
 
 		// tds.nextTimeslice();
 		// for (FloatMatrix in : test) {
@@ -72,7 +71,7 @@ public class TestRecipeBuilder {
 				FloatMatrix actualOutput = Propagate.up(in, network);
 				FloatMatrix expectedOutput = expectedOutput(in);
 
-				nw.fineTuneOutputLayer(expectedOutput, actualOutput, in);
+				nw.fineTuneOutputLayer(expectedOutput, actualOutput);
 
 			}
 			if (epoch % 100 == 0)

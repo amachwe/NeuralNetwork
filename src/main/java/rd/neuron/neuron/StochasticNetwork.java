@@ -68,7 +68,7 @@ public class StochasticNetwork implements Network {
 
 	}
 
-	public void fineTuneOutputLayer(FloatMatrix expectedOutput, FloatMatrix actualOutput, FloatMatrix input) {
+	public void fineTuneOutputAndHiddenLayer(FloatMatrix expectedOutput, FloatMatrix actualOutput, FloatMatrix input) {
 
 		FloatMatrix[] outputLayerNewWtsB = trainOutputLayer(0.05f, expectedOutput, actualOutput);
 		network.get(network.size() - 1).setAllWeights(outputLayerNewWtsB[0]);
@@ -84,8 +84,25 @@ public class StochasticNetwork implements Network {
 		network.get(network.size() - 2).setAllBias(hiddenLayerNewWtsB[1]);
 
 	}
+	
+	public void fineTuneOutputLayer(FloatMatrix expectedOutput, FloatMatrix actualOutput)
+	{
+		FloatMatrix[] outputLayerNewWtsB = trainOutputLayer(0.05f, expectedOutput, actualOutput);
+		network.get(network.size() - 1).setAllWeights(outputLayerNewWtsB[0]);
+		network.get(network.size() - 1).setAllBias(outputLayerNewWtsB[1]);
+	}
 
-	public void preTrain(FloatMatrix[] in, int steps, float learningRate) {
+	/**
+	 * CD Pretraining
+	 * 
+	 * @param in
+	 *            - input training data
+	 * @param steps
+	 *            - number of CD Step
+	 * @param learningRate
+	 *            - learning rate
+	 */
+	public static void preTrain(List<LayerIf> network,FloatMatrix[] in, int steps, float learningRate) {
 
 		for (LayerIf layer : network) {
 			for (FloatMatrix _in : in) {
@@ -95,24 +112,28 @@ public class StochasticNetwork implements Network {
 
 				} else {
 
-					if (layer.getLayerType() != LayerType.OUTPUT) {
+					FloatMatrix _result = null;
 
-						FloatMatrix _result = null;
+					_result = Propagate.up(_in, network, layer.getLayerIndex());
 
-						_result = Propagate.up(_in, network, layer.getLayerIndex());
-
-						layer.train(_result, steps, learningRate);
-
-					}
+					layer.train(_result, steps, learningRate);
 
 				}
 			}
 		}
 	}
 
-	public void preTrain(List<FloatMatrix> in, int steps, float learningRate) {
+	/**
+	 * CD Pretraining
+	 * 
+	 * @param in
+	 *            - input training data
+	 * @param steps
+	 *            - number of CD tests
+	 * @param learningRate
+	 */
+	public static void preTrain(List<LayerIf> network,List<FloatMatrix> in, int steps, float learningRate) {
 
-	
 		for (LayerIf layer : network) {
 			for (FloatMatrix _in : in) {
 				if (layer.getLayerType() == LayerType.FIRST_HIDDEN) {
@@ -121,21 +142,17 @@ public class StochasticNetwork implements Network {
 
 				} else {
 
-					// if (layer.getLayerType() != LayerType.OUTPUT)
-					{
+					FloatMatrix _result = null;
 
-						FloatMatrix _result = null;
+					_result = Propagate.up(_in, network, layer.getLayerIndex());
 
-						_result = Propagate.up(_in, network, layer.getLayerIndex());
-
-						layer.train(_result, steps, learningRate);
-
-					}
+					layer.train(_result, steps, learningRate);
 
 				}
 			}
-			
+
 		}
+
 	}
 
 	/**
@@ -206,6 +223,7 @@ public class StochasticNetwork implements Network {
 
 	/**
 	 * Save network to file
+	 * 
 	 * @param file
 	 * @param network
 	 */
@@ -221,6 +239,7 @@ public class StochasticNetwork implements Network {
 
 	/**
 	 * Load Network layers from file
+	 * 
 	 * @param file
 	 * @return
 	 */

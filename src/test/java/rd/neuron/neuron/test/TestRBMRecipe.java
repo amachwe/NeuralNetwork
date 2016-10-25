@@ -44,7 +44,7 @@ public class TestRBMRecipe {
 					}
 				}
 			}
-			nw.preTrain(dataSet, 10, 0.02f);
+			StochasticNetwork.preTrain(network,dataSet, 10, 0.02f);
 
 		}
 		float avg = 0;

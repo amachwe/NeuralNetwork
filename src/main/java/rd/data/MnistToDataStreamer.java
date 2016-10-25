@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.canova.image.mnist.MnistLabelFile;
+
 /**
  * Convert MNIST Image/Label pairs to Data Streamer
+ * 
  * @author azahar
  *
  */
@@ -52,7 +54,6 @@ public class MnistToDataStreamer {
 
 		final float max = maxValue;
 
-
 		while (digitImage.getCurrentIndex() <= digitImage.getCount()) {
 
 			int lbl = labelData.readLabel();
@@ -69,44 +70,78 @@ public class MnistToDataStreamer {
 				}
 
 			}
-		
+
 			streamer.add(imgInput, digitToOneHotEncoding(lbl));
 
 		}
-		
 
 		digitImage.close();
 		labelData.close();
 		return streamer;
 	}
 
-	private static float[] digitToOneHotEncoding(int digit) {
+	private static float[] zero = null, one = null, two = null, three = null, four = null, five = null, six = null,
+			seven = null, eight = null, nine = null, def = null;
+
+	public static float[] digitToOneHotEncoding(int digit) {
+
 		switch (digit) {
 		case 0:
-			return new float[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			if (zero != null) {
+				return zero;
+			}
+			return zero = new float[] { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		case 1:
-			return new float[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
+			if (one != null) {
+				return one;
+			}
+			return one = new float[] { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
 		case 2:
-			return new float[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 };
+			if (two != null) {
+				return two;
+			}
+			return two = new float[] { 0, 0, 1, 0, 0, 0, 0, 0, 0, 0 };
 		case 3:
-			return new float[] { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
+			if (three != null) {
+				return three;
+			}
+			return three = new float[] { 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 };
 		case 4:
-			return new float[] { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };
+			if (four != null) {
+				return four;
+			}
+			return four = new float[] { 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 };
 		case 5:
-			return new float[] { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
+			if (five != null) {
+				return five;
+			}
+			return five = new float[] { 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 };
 		case 6:
-			return new float[] { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 };
+			if (six != null) {
+				return six;
+			}
+			return six = new float[] { 0, 0, 0, 0, 0, 0, 1, 0, 0, 0 };
 		case 7:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 };
+			if (seven != null) {
+				return seven;
+			}
+			return seven = new float[] { 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 };
 		case 8:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 };
+			if (eight != null) {
+				return eight;
+			}
+			return eight = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0 };
 		case 9:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+			if (nine != null) {
+				return nine;
+			}
+			return nine = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
 		default:
-			return new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			if (def != null) {
+				return def;
+			}
+			return def = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		}
 	}
-	
-	
 
 }
